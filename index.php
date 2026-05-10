@@ -1,36 +1,50 @@
-<?php 
-include 'includes/cabecalho.php';
-include 'includes/dados.php';
-include 'includes/cabecalho.php'; 
+<?php
+define('ACESSO_PERMITIDO', true);
+include 'dados.php';
+include 'cabecalho.php';
 ?>
 
-<div class="container my-5">
+<main class="container my-5">
     <header class="text-center mb-5">
-        <h1 class="display-4" style="font-family: 'Playfair Display';">Nossa Coleção</h1>
-        <p class="lead text-muted">Peças exclusivas feitas por mãos talentosas.</p>
+        <h1 class="display-4 font-artesanal">Catálogo Artesanal</h1>
+        <p class="text-muted">Produtos feitos à mão com cuidado e carinho.</p>
     </header>
-
     <div class="row g-4">
-        <?php if (isset($produtos) && !empty($produtos)): ?>
-            <?php foreach ($produtos as $p): ?>
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-                        <img src="./assets/css/images/<?php echo $p['imagem']; ?>" class="card-img-top" alt="...">
-                        <div class="card-body text-center">
-                            <h5 class="card-title"><?php echo htmlspecialchars($p['nome']); ?></h5>
-                            <p class="text-muted small"><?php echo htmlspecialchars($p['categoria']); ?></p>
-                            <p class="fw-bold">R$ <?php echo number_format($p['preco'], 2, ',', '.'); ?></p>
-                            <a href="detalhes.php?id=<?php echo $p['id']; ?>" class="btn btn-primary w-100">Ver Detalhes</a>
+        <?php foreach ($produtos as $p): ?>
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="assets/css/images/<?php echo $p['imagem']; ?>" 
+                         class="card-img-top" 
+                         alt="<?php echo htmlspecialchars($p['nome']); ?>"
+                         style="height: 250px; object-fit: cover;">
+                    
+                    <div class="card-body d-flex flex-column">
+                        <div class="mb-2">
+                            <span class="badge bg-light text-dark border small">
+                                <?php echo htmlspecialchars($p['categoria']); ?>
+                            </span>
+                        </div>
+                        
+                        <h5 class="card-title"><?php echo htmlspecialchars($p['nome']); ?></h5>
+                        
+                        <p class="card-text text-muted small flex-grow-1">
+                            <?php echo htmlspecialchars($p['descricao']); ?>
+                        </p>
+                        
+                        <div class="mt-3">
+                            <p class="h5 text-success fw-bold">
+                                R$ <?php echo number_format($p['preco'], 2, ',', '.'); ?>
+                            </p>
+                            <a href="detalhes.php?id=<?php echo $p['id']; ?>" class="btn btn-dark w-100 mt-2">
+                                Ver Detalhes
+                            </a>
                         </div>
                     </div>
                 </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <div class="col-12">
-                <p class="text-center text-muted">Nenhum produto disponível.</p>
             </div>
-        <?php endif; ?>
+        <?php endforeach; ?>
     </div>
-</div>
-
-<?php include 'includes/rodape.php'; ?>
+</main>
+<?php 
+include 'rodape.php'; 
+?>
