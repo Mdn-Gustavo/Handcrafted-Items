@@ -13,7 +13,7 @@ $categorias = [
 
 $produtos = [
     [
-        'id'        => 1,
+        "id"        => 1,
         "nome"      => "Sabonete de Rosas",
         "preco"     => 30.00,
         "imagem"    => "sabonete01.png",
@@ -21,7 +21,7 @@ $produtos = [
         "categoria" => "Sabonetes"
     ],
     [
-        'id'        => 2,
+        "id"        => 2,
         "nome"      => "Sabonede de Mel e Calêndula",
         "preco"     => 32.99,
         "imagem"    => "sabonete02.png",
@@ -29,7 +29,7 @@ $produtos = [
         "categoria" => "Sabonetes"
     ],
     [
-        'id'        => 3,
+        "id"        => 3,
         "nome"      => "Swirl de Menta e Eucalipto",
         "preco"     => 33.00,
         "imagem"    => "sabonete03.png",
@@ -37,7 +37,7 @@ $produtos = [
         "categoria" => "Sabonetes"
     ],
     [
-        'id'        => 4,
+        "id"        => 4,
         "nome"      => "Sabonete de Carvão Ativado",
         "preco"     => 35.50,
         "imagem"    => "sabonete04.png",
@@ -45,7 +45,7 @@ $produtos = [
         "categoria" => "Sabonetes"
     ],
     [
-        'id'        => 5,
+        "id"        => 5,
         "nome"      => "Sabonete de Lavanda e Aveia",
         "preco"     => 32.00,
         "imagem"    => "sabonete05.png",
@@ -53,7 +53,7 @@ $produtos = [
         "categoria" => "Sabonetes"
     ],
     [
-        'id'        => 6,
+        "id"        => 6,
         "nome"      => "Cerâmica Laranja e Canela Especiada",
         "preco"     => 49.99,
         "imagem"    => "ceramica01.png",
@@ -61,7 +61,7 @@ $produtos = [
         "categoria" => "Cerâmicas"
     ],
     [
-        'id'        => 7,
+        "id"        => 7,
         "nome"      => "Cerâmica Carvão Ativado",
         "preco"     => 49.99,
         "imagem"    => "ceramica02.png",
@@ -69,7 +69,7 @@ $produtos = [
         "categoria" => "Cerâmicas"
     ],
     [
-        'id'        => 8,
+        "id"        => 8,
         "nome"      => "Cerâmica Lavanda e Aveia",
         "preco"     => 49.99,
         "imagem"    => "ceramica03.png",
@@ -77,7 +77,7 @@ $produtos = [
         "categoria" => "Cerâmicas"
     ],
     [
-        'id'        => 9,
+        "id"        => 9,
         "nome"      => "Cerâmica Café e Canela",
         "preco"     => 49.99,
         "imagem"    => "ceramica04.png",
@@ -85,7 +85,7 @@ $produtos = [
         "categoria" => "Cerâmicas"
     ],
     [
-        'id'        => 10,
+        "id"        => 10,
         "nome"      => "Cerâmica Chá de Limão",
         "preco"     => 49.99,
         "imagem"    => "ceramica05.png",
@@ -93,7 +93,7 @@ $produtos = [
         "categoria" => "Cerâmicas"
     ],
     [
-        'id'        => 11,
+        "id"        => 11,
         "nome"      => "Mistura Lavanda, Camomila e Melissa",
         "preco"     => 22.99,
         "imagem"    => "LavanCamoMeli.png",
@@ -101,7 +101,7 @@ $produtos = [
         "categoria" => "Chás"
     ],
     [
-        'id'        => 12,
+        "id"        => 12,
         "nome"      => "Mistura Menta, Funcho e Coentro",
         "preco"     => 22.99,
         "imagem"    => "MentaFunchoCoen.png",
@@ -109,7 +109,7 @@ $produtos = [
         "categoria" => "Chás"
     ],
     [
-        'id'        => 13,
+        "id"        => 13,
         "nome"      => "Mistura Eucalipto, Malva e Tomilho",
         "preco"     => 22.99,
         "imagem"    => "EucaliptoMelissa.png",
@@ -117,7 +117,7 @@ $produtos = [
         "categoria" => "Chás"
     ],
     [
-        'id'        => 14,
+        "id"        => 14,
         "nome"      => "Mistura Urtiga, Dente-de-Leão e Lúcia-Lima",
         "preco"     => 22.99,
         "imagem"    => "UrtigaDDLLucia.png",
@@ -125,7 +125,7 @@ $produtos = [
         "categoria" => "Chás"
     ],
     [
-        'id'        => 15,
+        "id"        => 15,
         "nome"      => "Hibisco, Rosa Mosqueta e Alecrim",
         "preco"     => 22.99,
         "imagem"    => "HibiscoRosaAlecrim.png",
