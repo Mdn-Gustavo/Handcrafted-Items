@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 if (!isset($_SESSION["logged_in"])) {
@@ -15,29 +14,17 @@ $error = "";
 $success = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
     $nome = trim($_POST["nome"]);
     $categoria = trim($_POST["categoria"]);
     $preco = trim($_POST["preco"]);
     $descricao = trim($_POST["descricao"]);
     $imagem = trim($_POST["imagem"]);
 
-    if (
-        empty($nome) ||
-        empty($categoria) ||
-        empty($preco) ||
-        empty($descricao) ||
-        empty($imagem)
-    ) {
-
+    if (empty($nome) || empty($categoria) || empty($preco) || empty($descricao) || empty($imagem)) {
         $error = "Todos os campos são obrigatórios";
-
     } elseif (!is_numeric($preco)) {
-
         $error = "O preço deve ser numérico";
-
     } else {
-
         $novoProduto = [
             "id" => uniqid(),
             "nome" => $nome,
@@ -46,55 +33,98 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "descricao" => $descricao,
             "imagem" => $imagem,
         ];
-
         $_SESSION["produtos"][] = $novoProduto;
-
         $success = "Produto cadastrado com sucesso";
     }
 }
 
+include 'cabecalho.php'; 
 ?>
 
-<?php if (!empty($error)) : ?>
+<link rel="stylesheet" href="assets/css/style.css">
+<main class="container admin-container">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            
+            <div class="admin-header d-flex justify-content-between align-items-center mb-4">
+                <h1 class="font-artesanal">Painel Administrativo</h1>
+                <a href="logout.php" class="btn btn-logout">Sair do Sistema</a>
+            </div>
 
-    <p><?= htmlspecialchars($error) ?></p>
+            <div class="card card-admin shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h4 class="card-title-admin mb-4">Cadastrar Novo Item</h4>
 
-<?php endif; ?>
+                    <?php if (!empty($error)) : ?>
+                        <div class="alert alert-danger alert-custom"><?= htmlspecialchars($error) ?></div>
+                    <?php endif; ?>
 
-<?php if (!empty($success)) : ?>
+                    <?php if (!empty($success)) : ?>
+                        <div class="alert alert-success alert-custom"><?= htmlspecialchars($success) ?></div>
+                    <?php endif; ?>
 
-    <p><?= htmlspecialchars($success) ?></p>
+                    <form method="POST" class="admin-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label label-small">Nome do Produto</label>
+                                <input type="text" name="nome" class="form-control" placeholder="Ex: Sabonete de Alecrim">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label label-small">Categoria</label>
+                                <input type="text" name="categoria" class="form-control" placeholder="Ex: Sabonetes">
+                            </div>
+                        </div>
 
-<?php endif; ?>
+                        <div class="mb-3">
+                            <label class="form-label label-small">Preço (R$)</label>
+                            <input type="text" name="preco" class="form-control" placeholder="0.00">
+                        </div>
 
-<h1>Área Protegida</h1>
+                        <div class="mb-3">
+                            <label class="form-label label-small">Descrição Detalhada</label>
+                            <textarea name="descricao" class="form-control" rows="3" placeholder="Descreva os materiais..."></textarea>
+                        </div>
 
-<form method="POST">
+                        <div class="mb-4">
+                            <label class="form-label label-small">Nome do Arquivo de Imagem</label>
+                            <input type="text" name="imagem" class="form-control" placeholder="exemplo.png">
+                        </div>
 
-    <input type="text" name="nome" placeholder="Nome do produto">
+                        <button type="submit" class="btn btn-primary btn-save w-100 py-2">
+                            Salvar Produto no Catálogo
+                        </button>
+                    </form>
+                </div>
+            </div>
 
-    <br><br>
+            <?php if (!empty($_SESSION["produtos"])): ?>
+                <section class="recent-products mt-5">
+                    <h5 class="font-artesanal mb-3">Produtos Adicionados Recentemente</h5>
+                    <div class="table-responsive">
+                        <table class="table table-custom shadow-sm">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Categoria</th>
+                                    <th>Preço</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($_SESSION["produtos"] as $prod): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($prod['nome']) ?></td>
+                                        <td><?= htmlspecialchars($prod['categoria']) ?></td>
+                                        <td>R$ <?= number_format($prod['preco'], 2, ',', '.') ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            <?php endif; ?>
 
-    <input type="text" name="categoria" placeholder="Categoria">
+        </div>
+    </div>
+</main>
 
-    <br><br>
-
-    <input type="text" name="preco" placeholder="Preço">
-
-    <br><br>
-
-    <textarea name="descricao" placeholder="Descrição"></textarea>
-
-    <br><br>
-
-    <input type="text" name="imagem" placeholder="URL da imagem">
-
-    <br><br>
-
-    <button type="submit">Cadastrar Produto</button>
-
-</form>
-
-<br>
-
-<a href="logout.php">Logout</a>
+<?php include 'rodape.php'; ?>
