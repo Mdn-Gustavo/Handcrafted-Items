@@ -9,14 +9,14 @@ include 'cabecalho.php';
         <h1 class="display-4 font-artesanal">Catálogo Artesanal</h1>
         <p class="text-muted">Produtos feitos à mão com cuidado e carinho.</p>
     </header>
+
     <div class="row g-4">
         <?php foreach ($produtos as $p): ?>
             <div class="col-12 col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
+                <div class="card h-100 shadow-sm border-0 card-hover-efeito">
                     <img src="assets/css/images/<?php echo $p['imagem']; ?>" 
-                         class="card-img-top" 
-                         alt="<?php echo htmlspecialchars($p['nome']); ?>"
-                         style="height: 250px; object-fit: cover;">
+                         class="card-img-top img-card-catalogo" 
+                         alt="<?php echo htmlspecialchars($p['nome']); ?>">
                     
                     <div class="card-body d-flex flex-column">
                         <div class="mb-2">
@@ -45,6 +45,7 @@ include 'cabecalho.php';
         <?php endforeach; ?>
     </div>
 </main>
+
 <?php 
 include 'rodape.php'; 
 ?>
