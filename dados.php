@@ -122,7 +122,7 @@ $produtos = [
         "categoria" => "Chás",
         "preco"     => 22.99,
         "descricao" => "A urtiga seca mistura-se com pedaços da raiz de dente-de-leão e as folhas de lúcia-lima.",
-        "imagem"    => "UrtigaDDLLucia.png"
+        "imagem"    => "UtigaDDLLucia.png"
     ],
     [
         "id"        => 15,
@@ -130,6 +130,6 @@ $produtos = [
         "categoria" => "Chás",
         "preco"     => 22.99,
         "descricao" => "As flores de hibisco seco dominam o visual, misturadas com pedaços de casca de rosa mosqueta e as agulhas verdes e finas do alecrim.",
-        "imagem"    => "HibiscoRosaAlecrim.png"
+        "imagem"    => "HibiscRosaAlecrim.png"
     ],
 ];
