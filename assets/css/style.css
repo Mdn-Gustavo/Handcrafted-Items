@@ -122,3 +122,25 @@ body {
     border-radius: 6px;
     font-size: 0.9rem;
 }
+
+.img-card-catalogo {
+    height: 250px;
+    object-fit: cover;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.card-hover-efeito {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover-efeito:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.font-artesanal {
+    font-family: 'Playfair Display', serif;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
