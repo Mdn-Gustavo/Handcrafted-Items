@@ -24,8 +24,7 @@ session_start();
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="index.php">Início</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Catálogo</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.php">Catálogo</a></li>
                 <li class="nav-item"><a class="nav-link" href="filtrar.php">Filtrar</a></li>
                 <li class="nav-item"><a class="nav-link btn btn-outline-warning btn-sm ms-lg-2" href="login.php">Área do Artesão</a></li>
             </ul>
