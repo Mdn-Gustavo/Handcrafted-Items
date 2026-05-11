@@ -24,103 +24,108 @@ if (!is_numeric($_GET['id']) || (int)$_GET['id'] <= 0) {
         $erro = "Produto com ID {$id_buscado} não encontrado.";
     }
 }
+
 $titulo_pagina = isset($produto_encontrado)
     ? htmlspecialchars($produto_encontrado['nome']) . ' — Handcrafted Items'
     : 'Produto não encontrado — Handcrafted Items';
+
+include 'cabecalho.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title><?= $titulo_pagina ?></title>
-</head>
-<body>
 
-<?php include 'Handcrafted-Items/cabecalho.php'; ?>
+<main class="container my-5">
 
-<main>
-
-    <nav class="breadcrumb">
-        <a href="index.php">← Voltar ao catálogo</a>
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="index.php" class="text-decoration-none">← Voltar ao catálogo</a>
+            </li>
+            <?php if (isset($produto_encontrado)): ?>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <?= htmlspecialchars($produto_encontrado['nome']) ?>
+                </li>
+            <?php endif; ?>
+        </ol>
     </nav>
 
     <?php if (isset($erro)): ?>
-
-        <div class="mensagem-erro">
-            <h2> Ops!</h2>
-            <p><?= htmlspecialchars($erro) ?></p>
-            <a href="index.php" class="btn">Voltar ao catálogo</a>
+        <div class="text-center py-5">
+            <div class="alert alert-danger shadow-sm" role="alert">
+                <h2 class="alert-heading">😕 Ops!</h2>
+                <p class="mb-3"><?= htmlspecialchars($erro) ?></p>
+                <hr>
+                <a href="index.php" class="btn btn-dark">Voltar ao catálogo</a>
+            </div>
         </div>
 
     <?php else: ?>
 
-        <?php
-        $p = $produto_encontrado;
-        ?>
+        <?php $p = $produto_encontrado; ?>
+        <div class="row g-4 mb-5">
+            <div class="col-lg-6">
+                <div class="card shadow border-0 position-relative">
+                    <img src="assets/css/images/<?= htmlspecialchars($p['imagem']) ?>"
+                         class="card-img-top rounded"
+                         alt="<?= htmlspecialchars($p['nome']) ?>"
+                         style="object-fit: cover; max-height: 500px;">
 
-        <article class="pagina-produto">
-            <div class="produto-imagem">
-                <img
-                    src="<?= htmlspecialchars($p['imagem']) ?>"
-                    alt="<?= htmlspecialchars($p['nome']) ?>"
-                >
-                <?php if ($p['destaque']): ?>
-                    <span class="badge-destaque"> Produto em Destaque</span>
-                <?php endif; ?>
+                    <?php if ($p['destaque']): ?>
+                        <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark fs-6">
+                            ⭐ Produto em Destaque
+                        </span>
+                    <?php endif; ?>
+                </div>
             </div>
 
-            <div class="produto-info">
-
-                <p class="categoria">
-                    <a href="filtrar.php?categoria=<?= urlencode($p['categoria']) ?>">
+            <div class="col-lg-6">
+                <div class="mb-3">
+                    <a href="filtrar.php?categoria=<?= urlencode($p['categoria']) ?>"
+                       class="badge bg-light text-dark border text-decoration-none">
                         <?= htmlspecialchars(ucfirst($p['categoria'])) ?>
                     </a>
-                </p>
+                </div>
 
-                <h1><?= htmlspecialchars($p['nome']) ?></h1>
+                <h1 class="display-5 fw-bold mb-3"><?= htmlspecialchars($p['nome']) ?></h1>
 
-                <p class="preco">
+                <p class="h3 text-success fw-bold mb-4">
                     R$ <?= number_format($p['preco'], 2, ',', '.') ?>
                 </p>
 
-                <div class="estoque">
+                <div class="mb-4">
                     <?php if ($p['estoque'] > 5): ?>
-                        <span class="disponivel"> Em estoque</span>
+                        <span class="badge bg-success fs-6">✓ Em estoque</span>
 
                     <?php elseif ($p['estoque'] > 0): ?>
-                        <span class="ultimas">
-                            Últimas <?= $p['estoque'] ?> unidade(s)!
+                        <span class="badge bg-warning text-dark fs-6">
+                            ⚠️ Últimas <?= $p['estoque'] ?> unidade(s)!
                         </span>
 
                     <?php else: ?>
-                        <span class="esgotado">❌ Esgotado</span>
+                        <span class="badge bg-danger fs-6">❌ Esgotado</span>
                     <?php endif; ?>
                 </div>
 
-                <p class="descricao-curta">
+                <p class="lead text-muted mb-4">
                     <?= htmlspecialchars($p['descricao']) ?>
                 </p>
 
-                <div class="detalhes-completos">
-                    <h3>Sobre o produto</h3>
-                    <p><?= htmlspecialchars($p['detalhes']) ?></p>
+                <div class="card bg-light border-0 p-4 mb-4">
+                    <h5 class="fw-bold mb-3"> Sobre o produto</h5>
+                    <p class="mb-0"><?= htmlspecialchars($p['detalhes']) ?></p>
                 </div>
 
                 <?php if ($p['estoque'] > 0): ?>
-                    <button
-                        class="btn-comprar"
-                        data-produto-id="<?= $p['id'] ?>"
-                    >
-                         Adicionar ao carrinho
+                    <button class="btn btn-dark btn-lg w-100 py-3"
+                            data-produto-id="<?= $p['id'] ?>">
+                        🛒 Adicionar ao carrinho
                     </button>
                 <?php else: ?>
-                    <button class="btn-comprar desabilitado" disabled>
+                    <button class="btn btn-secondary btn-lg w-100 py-3" disabled>
                         Produto indisponível
                     </button>
                 <?php endif; ?>
-
             </div>
-        </article>
+        </div>
+
         <?php
         $relacionados = [];
         foreach ($produtos as $item) {
@@ -137,36 +142,38 @@ $titulo_pagina = isset($produto_encontrado)
         ?>
 
         <?php if (!empty($relacionados)): ?>
-            <section class="produtos-relacionados">
-                <h2> Você também pode gostar</h2>
-                <div class="grade-produtos">
+            <section class="mt-5 pt-5 border-top">
+                <h2 class="text-center mb-4 font-artesanal"> Você também pode gostar</h2>
+
+                <div class="row g-4">
                     <?php foreach ($relacionados as $rel): ?>
-                        <article class="card-produto">
-                            <img
-                                src="<?= htmlspecialchars($rel['imagem']) ?>"
-                                alt="<?= htmlspecialchars($rel['nome']) ?>"
-                            >
-                            <h3><?= htmlspecialchars($rel['nome']) ?></h3>
-                            <p class="preco">
-                                R$ <?= number_format($rel['preco'], 2, ',', '.') ?>
-                            </p>
-                            <a
-                                href="detalhes.php?id=<?= $rel['id'] ?>"
-                                class="btn-ver"
-                            >
-                                Ver detalhes →
-                            </a>
-                        </article>
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="card h-100 shadow-sm border-0 card-hover-efeito">
+                                <img src="assets/css/images/<?= htmlspecialchars($rel['imagem']) ?>"
+                                     class="card-img-top img-card-catalogo"
+                                     alt="<?= htmlspecialchars($rel['nome']) ?>">
+
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title"><?= htmlspecialchars($rel['nome']) ?></h5>
+
+                                    <p class="h5 text-success fw-bold mt-auto mb-3">
+                                        R$ <?= number_format($rel['preco'], 2, ',', '.') ?>
+                                    </p>
+
+                                    <a href="detalhes.php?id=<?= $rel['id'] ?>"
+                                       class="btn btn-dark w-100">
+                                        Ver detalhes →
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     <?php endforeach; ?>
                 </div>
             </section>
         <?php endif; ?>
 
-    <?php endif;?>
+    <?php endif; ?>
 
 </main>
 
-<?php include 'Handcrafted-Items/rodape.php'; ?>
-
-</body>
-</html>
+<?php include 'rodape.php'; ?>
