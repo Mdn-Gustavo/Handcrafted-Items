@@ -26,7 +26,7 @@ $produtos = [
         "categoria" => "Sabonetes",
         "preco"     => 32.99,
         "descricao" => "Uma barra translúcida e dourada, com pétalas de calêndula a doçura do mel.",
-        "imagem"    => "sabonete02.png"
+        "imagem"    => "sabonete02.jpeg"
     ],
     [
         "id"        => 3,
@@ -58,7 +58,7 @@ $produtos = [
         "categoria" => "Cerâmicas",
         "preco"     => 49.99,
         "descricao" => "Glaze âmbar/dourado com speckling coarse, para um visual quente e acolhedor.",
-        "imagem"    => "ceramica01.png"
+        "imagem"    => "ceramica01.jpeg"
     ],
     [
         "id"        => 7,
