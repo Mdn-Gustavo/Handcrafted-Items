@@ -71,13 +71,6 @@ Handcrafted-Items/
 └── README.md
 ```
 
----
-
-## Team Members
-
-* Gustavo Medina
-* Team Member 2
-* Team Member 3
 
 ---
 
