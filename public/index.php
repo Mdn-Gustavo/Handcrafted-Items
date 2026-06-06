@@ -1,7 +1,12 @@
 <?php
-define('ACESSO_PERMITIDO', true);
-include 'dados.php';
-include 'cabecalho.php';
+define("ACESSO_PERMITIDO", true);
+
+require_once __DIR__ . "/models/Produto.php";
+
+$model = new Produto();
+$produtos = $model->listarTodos();
+
+include __DIR__ . "/cabecalho.php";
 ?>
 
 <main class="container my-5">
@@ -14,28 +19,37 @@ include 'cabecalho.php';
         <?php foreach ($produtos as $p): ?>
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="card h-100 shadow-sm border-0 card-hover-efeito">
-                    <img src="assets/css/images/<?php echo $p['imagem']; ?>" 
-                         class="card-img-top img-card-catalogo" 
-                         alt="<?php echo htmlspecialchars($p['nome']); ?>">
-                    
+                    <img src="assets/css/images/<?php echo $p["imagem"]; ?>"
+                         class="card-img-top img-card-catalogo"
+                         alt="<?php echo htmlspecialchars($p["nome"]); ?>">
+
                     <div class="card-body d-flex flex-column">
                         <div class="mb-2">
                             <span class="badge bg-light text-dark border small">
-                                <?php echo htmlspecialchars($p['categoria']); ?>
+                                <?php echo htmlspecialchars($p["categoria"]); ?>
                             </span>
                         </div>
-                        
-                        <h5 class="card-title"><?php echo htmlspecialchars($p['nome']); ?></h5>
-                        
+
+                        <h5 class="card-title"><?php echo htmlspecialchars(
+                            $p["nome"],
+                        ); ?></h5>
+
                         <p class="card-text text-muted small flex-grow-1">
-                            <?php echo htmlspecialchars($p['descricao']); ?>
+                            <?php echo htmlspecialchars($p["descricao"]); ?>
                         </p>
-                        
+
                         <div class="mt-3">
                             <p class="h5 text-success fw-bold">
-                                R$ <?php echo number_format($p['preco'], 2, ',', '.'); ?>
+                                R$ <?php echo number_format(
+                                    $p["preco"],
+                                    2,
+                                    ",",
+                                    ".",
+                                ); ?>
                             </p>
-                            <a href="detalhes.php?id=<?php echo $p['id']; ?>" class="btn btn-dark w-100 mt-2">
+                            <a href="detalhes.php?id=<?php echo $p[
+                                "id"
+                            ]; ?>" class="btn btn-dark w-100 mt-2">
                                 Ver Detalhes
                             </a>
                         </div>
@@ -46,6 +60,5 @@ include 'cabecalho.php';
     </div>
 </main>
 
-<?php 
-include 'rodape.php'; 
+<?php include "rodape.php";
 ?>

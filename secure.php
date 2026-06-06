@@ -6,46 +6,63 @@ if (!isset($_SESSION["logged_in"])) {
     exit();
 }
 
-if (!isset($_SESSION["produtos"])) {
-    $_SESSION["produtos"] = [];
-}
+require_once __DIR__ . "/models/Produto.php";
+require_once __DIR__ . "/models/Categoria.php";
+
+$categoriaModel = new Categoria();
+$produtoModel = new Produto();
+$categorias = $categoriaModel->all();
 
 $error = "";
 $success = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nome = trim($_POST["nome"]);
-    $categoria = trim($_POST["categoria"]);
-    $preco = trim($_POST["preco"]);
-    $descricao = trim($_POST["descricao"]);
-    $imagem = trim($_POST["imagem"]);
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $nome = trim($_POST["nome"] ?? "");
+    $categoria_id = trim($_POST["categoria_id"] ?? "");
+    $preco = trim($_POST["preco"] ?? "");
+    $descricao = trim($_POST["descricao"] ?? "");
+    $imagem = trim($_POST["imagem"] ?? "");
 
-    if (empty($nome) || empty($categoria) || empty($preco) || empty($descricao) || empty($imagem)) {
+    if (
+        $nome === "" ||
+        $categoria_id === "" ||
+        $preco === "" ||
+        $descricao === "" ||
+        $imagem === ""
+    ) {
         $error = "Todos os campos são obrigatórios";
     } elseif (!is_numeric($preco)) {
         $error = "O preço deve ser numérico";
+    } elseif (!is_numeric($categoria_id)) {
+        $error = "Categoria inválida";
     } else {
-        $novoProduto = [
-            "id" => uniqid(),
+        $ok = $produtoModel->create([
             "nome" => $nome,
-            "categoria" => $categoria,
-            "preco" => $preco,
             "descricao" => $descricao,
+            "preco" => $preco,
             "imagem" => $imagem,
-        ];
-        $_SESSION["produtos"][] = $novoProduto;
-        $success = "Produto cadastrado com sucesso";
+            "categoria_id" => $categoria_id,
+            "estoque" => 0,
+            "destaque" => 0,
+            "detalhes" => $descricao,
+        ]);
+
+        if ($ok) {
+            $success = "Produto cadastrado com sucesso";
+        } else {
+            $error = "Erro ao cadastrar produto";
+        }
     }
 }
 
-include 'cabecalho.php'; 
+include "cabecalho.php";
 ?>
 
 <link rel="stylesheet" href="assets/css/style.css">
 <main class="container admin-container">
     <div class="row justify-content-center">
         <div class="col-md-10 col-lg-8">
-            
+
             <div class="admin-header d-flex justify-content-between align-items-center mb-4">
                 <h1 class="font-artesanal">Painel Administrativo</h1>
                 <a href="logout.php" class="btn btn-logout">Sair do Sistema</a>
@@ -55,12 +72,16 @@ include 'cabecalho.php';
                 <div class="card-body p-4">
                     <h4 class="card-title-admin mb-4">Cadastrar Novo Item</h4>
 
-                    <?php if (!empty($error)) : ?>
-                        <div class="alert alert-danger alert-custom"><?= htmlspecialchars($error) ?></div>
+                    <?php if (!empty($error)): ?>
+                        <div class="alert alert-danger alert-custom"><?= htmlspecialchars(
+                            $error,
+                        ) ?></div>
                     <?php endif; ?>
 
-                    <?php if (!empty($success)) : ?>
-                        <div class="alert alert-success alert-custom"><?= htmlspecialchars($success) ?></div>
+                    <?php if (!empty($success)): ?>
+                        <div class="alert alert-success alert-custom"><?= htmlspecialchars(
+                            $success,
+                        ) ?></div>
                     <?php endif; ?>
 
                     <form method="POST" class="admin-form">
@@ -69,9 +90,18 @@ include 'cabecalho.php';
                                 <label class="form-label label-small">Nome do Produto</label>
                                 <input type="text" name="nome" class="form-control" placeholder="Ex: Sabonete de Alecrim">
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class="mb-3">
                                 <label class="form-label label-small">Categoria</label>
-                                <input type="text" name="categoria" class="form-control" placeholder="Ex: Sabonetes">
+                                <select name="categoria_id" class="form-control" required>
+                                    <option value="">Selecione</option>
+                                    <?php foreach ($categorias as $cat): ?>
+                                        <option value="<?= $cat[
+                                            "id"
+                                        ] ?>"><?= htmlspecialchars(
+    $cat["nome"],
+) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                         </div>
 
@@ -110,11 +140,23 @@ include 'cabecalho.php';
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($_SESSION["produtos"] as $prod): ?>
+                                <?php foreach (
+                                    $_SESSION["produtos"]
+                                    as $prod
+                                ): ?>
                                     <tr>
-                                        <td><?= htmlspecialchars($prod['nome']) ?></td>
-                                        <td><?= htmlspecialchars($prod['categoria']) ?></td>
-                                        <td>R$ <?= number_format($prod['preco'], 2, ',', '.') ?></td>
+                                        <td><?= htmlspecialchars(
+                                            $prod["nome"],
+                                        ) ?></td>
+                                        <td><?= htmlspecialchars(
+                                            $prod["categoria"],
+                                        ) ?></td>
+                                        <td>R$ <?= number_format(
+                                            $prod["preco"],
+                                            2,
+                                            ",",
+                                            ".",
+                                        ) ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -127,4 +169,4 @@ include 'cabecalho.php';
     </div>
 </main>
 
-<?php include 'rodape.php'; ?>
+<?php include "rodape.php"; ?>

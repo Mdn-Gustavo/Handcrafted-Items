@@ -6,12 +6,15 @@ class Database
     private string $dbname = "handcrafted_items";
     private string $user = "rootdasilva";
     private string $password = "123456";
+
     public function connect(): PDO
     {
-        return new PDO(
-            "mysql:host={$this->host};dbname={$this->dbname}",
-            $this->user,
-            $this->password,
-        );
+        $dsn = "mysql:host={$this->host};dbname={$this->dbname};charset=utf8mb4";
+
+        return new PDO($dsn, $this->user, $this->password, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ]);
     }
 }

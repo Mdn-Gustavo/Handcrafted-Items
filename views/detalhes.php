@@ -1,35 +1,27 @@
 <?php
 
-define('ACESSO_PERMITIDO', true);
-require_once 'dados.php';
+define("ACESSO_PERMITIDO", true);
+require_once __DIR__ . "/models/Produto.php";
 
-if (!isset($_GET['id'])) {
-    header('Location: index.php');
-    exit;
-}
+$produtoModel = new Produto();
+$produtos = $produtoModel->all();
 
-if (!is_numeric($_GET['id']) || (int)$_GET['id'] <= 0) {
-    $erro = 'ID de produto inválido.';
-} else {
-    $id_buscado = (int)$_GET['id'];
+if (!isset($_GET["id"]) || !is_numeric($_GET["id"]) || (int) $_GET["id"] <= 0) {
+    $erro = "ID de produto inválido.";
     $produto_encontrado = null;
+} else {
+    $produto_encontrado = $produtoModel->findById((int) $_GET["id"]);
 
-    foreach ($produtos as $produto) {
-        if ($produto['id'] === $id_buscado) {
-            $produto_encontrado = $produto;
-            break;
-        }
-    }
     if ($produto_encontrado === null) {
-        $erro = "Produto com ID {$id_buscado} não encontrado.";
+        $erro = "Produto com ID " . (int) $_GET["id"] . " não encontrado.";
     }
 }
 
 $titulo_pagina = isset($produto_encontrado)
-    ? htmlspecialchars($produto_encontrado['nome']) . ' — Handcrafted Items'
-    : 'Produto não encontrado — Handcrafted Items';
+    ? htmlspecialchars($produto_encontrado["nome"]) . " — Handcrafted Items"
+    : "Produto não encontrado — Handcrafted Items";
 
-include 'cabecalho.php';
+include "cabecalho.php";
 ?>
 
 <main class="container my-5">
@@ -41,7 +33,7 @@ include 'cabecalho.php';
             </li>
             <?php if (isset($produto_encontrado)): ?>
                 <li class="breadcrumb-item active" aria-current="page">
-                    <?= htmlspecialchars($produto_encontrado['nome']) ?>
+                    <?= htmlspecialchars($produto_encontrado["nome"]) ?>
                 </li>
             <?php endif; ?>
         </ol>
@@ -63,12 +55,14 @@ include 'cabecalho.php';
         <div class="row g-4 mb-5">
             <div class="col-lg-6">
                 <div class="card shadow border-0 position-relative">
-                    <img src="assets/css/images/<?= htmlspecialchars($p['imagem']) ?>"
+                    <img src="assets/css/images/<?= htmlspecialchars(
+                        $p["imagem"],
+                    ) ?>"
                          class="card-img-top rounded"
-                         alt="<?= htmlspecialchars($p['nome']) ?>"
+                         alt="<?= htmlspecialchars($p["nome"]) ?>"
                          style="object-fit: cover; max-height: 500px;">
 
-                    <?php if ($p['destaque']): ?>
+                    <?php if ($p["destaque"]): ?>
                         <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark fs-6">
                             ⭐ Produto em Destaque
                         </span>
@@ -78,25 +72,29 @@ include 'cabecalho.php';
 
             <div class="col-lg-6">
                 <div class="mb-3">
-                    <a href="filtrar.php?categoria=<?= urlencode($p['categoria']) ?>"
+                    <a href="filtrar.php?categoria=<?= urlencode(
+                        $p["categoria"],
+                    ) ?>"
                        class="badge bg-light text-dark border text-decoration-none">
-                        <?= htmlspecialchars(ucfirst($p['categoria'])) ?>
+                        <?= htmlspecialchars(ucfirst($p["categoria"])) ?>
                     </a>
                 </div>
 
-                <h1 class="display-5 fw-bold mb-3"><?= htmlspecialchars($p['nome']) ?></h1>
+                <h1 class="display-5 fw-bold mb-3"><?= htmlspecialchars(
+                    $p["nome"],
+                ) ?></h1>
 
                 <p class="h3 text-success fw-bold mb-4">
-                    R$ <?= number_format($p['preco'], 2, ',', '.') ?>
+                    R$ <?= number_format($p["preco"], 2, ",", ".") ?>
                 </p>
 
                 <div class="mb-4">
-                    <?php if ($p['estoque'] > 5): ?>
+                    <?php if ($p["estoque"] > 5): ?>
                         <span class="badge bg-success fs-6">✓ Em estoque</span>
 
-                    <?php elseif ($p['estoque'] > 0): ?>
+                    <?php elseif ($p["estoque"] > 0): ?>
                         <span class="badge bg-warning text-dark fs-6">
-                            ⚠️ Últimas <?= $p['estoque'] ?> unidade(s)!
+                            ⚠️ Últimas <?= $p["estoque"] ?> unidade(s)!
                         </span>
 
                     <?php else: ?>
@@ -105,17 +103,21 @@ include 'cabecalho.php';
                 </div>
 
                 <p class="lead text-muted mb-4">
-                    <?= htmlspecialchars($p['descricao']) ?>
+                    <?= htmlspecialchars($p["descricao"]) ?>
                 </p>
 
                 <div class="card bg-light border-0 p-4 mb-4">
                     <h5 class="fw-bold mb-3"> Sobre o produto</h5>
-                    <p class="mb-0"><?= htmlspecialchars($p['detalhes']) ?></p>
+                    <p class="mb-0">
+                        <?= htmlspecialchars(
+                            $p["detalhes"] ?? $p["descricao"],
+                        ) ?>
+                    </p>
                 </div>
 
-                <?php if ($p['estoque'] > 0): ?>
+                <?php if ($p["estoque"] > 0): ?>
                     <button class="btn btn-dark btn-lg w-100 py-3"
-                            data-produto-id="<?= $p['id'] ?>">
+                            data-produto-id="<?= $p["id"] ?>">
                         🛒 Adicionar ao carrinho
                     </button>
                 <?php else: ?>
@@ -130,8 +132,8 @@ include 'cabecalho.php';
         $relacionados = [];
         foreach ($produtos as $item) {
             if (
-                $item['categoria'] === $p['categoria'] &&
-                $item['id'] !== $p['id']
+                $item["categoria"] === $p["categoria"] &&
+                $item["id"] !== $p["id"]
             ) {
                 $relacionados[] = $item;
                 if (count($relacionados) >= 3) {
@@ -149,18 +151,29 @@ include 'cabecalho.php';
                     <?php foreach ($relacionados as $rel): ?>
                         <div class="col-12 col-md-6 col-lg-4">
                             <div class="card h-100 shadow-sm border-0 card-hover-efeito">
-                                <img src="assets/css/images/<?= htmlspecialchars($rel['imagem']) ?>"
+                                <img src="assets/css/images/<?= htmlspecialchars(
+                                    $rel["imagem"],
+                                ) ?>"
                                      class="card-img-top img-card-catalogo"
-                                     alt="<?= htmlspecialchars($rel['nome']) ?>">
+                                     alt="<?= htmlspecialchars(
+                                         $rel["nome"],
+                                     ) ?>">
 
                                 <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title"><?= htmlspecialchars($rel['nome']) ?></h5>
+                                    <h5 class="card-title"><?= htmlspecialchars(
+                                        $rel["nome"],
+                                    ) ?></h5>
 
                                     <p class="h5 text-success fw-bold mt-auto mb-3">
-                                        R$ <?= number_format($rel['preco'], 2, ',', '.') ?>
+                                        R$ <?= number_format(
+                                            $rel["preco"],
+                                            2,
+                                            ",",
+                                            ".",
+                                        ) ?>
                                     </p>
 
-                                    <a href="detalhes.php?id=<?= $rel['id'] ?>"
+                                    <a href="detalhes.php?id=<?= $rel["id"] ?>"
                                        class="btn btn-dark w-100">
                                         Ver detalhes →
                                     </a>
@@ -176,4 +189,4 @@ include 'cabecalho.php';
 
 </main>
 
-<?php include 'rodape.php'; ?>
+<?php include "rodape.php"; ?>
