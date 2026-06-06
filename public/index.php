@@ -3,8 +3,11 @@ define("ACESSO_PERMITIDO", true);
 
 require_once __DIR__ . "/models/Produto.php";
 
-$model = new Produto();
-$produtos = $model->listarTodos();
+$categoriaModel = new Categoria();
+$produtoModel = new Produto();
+
+$categorias = array_column($categoriaModel->all(), "nome");
+$produtos = $produtoModel->all();
 
 include __DIR__ . "/cabecalho.php";
 ?>

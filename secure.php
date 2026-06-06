@@ -11,6 +11,7 @@ require_once __DIR__ . "/models/Categoria.php";
 
 $categoriaModel = new Categoria();
 $produtoModel = new Produto();
+$produtos = $produtoModel->all();
 $categorias = $categoriaModel->all();
 
 $error = "";
