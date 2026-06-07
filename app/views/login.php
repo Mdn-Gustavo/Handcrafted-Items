@@ -2,6 +2,7 @@
 session_start();
 
 if (isset($_SESSION['logged_in'])) {
+    require_once __DIR__ . '/../secure.php';
     header("Location: secure.php");
     exit();
 }
