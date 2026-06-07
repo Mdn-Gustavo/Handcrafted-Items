@@ -1,15 +1,13 @@
 <?php
 define("ACESSO_PERMITIDO", true);
 
-require_once __DIR__ . "/models/Produto.php";
+require_once __DIR__ . "/../models/Produto.php";
 
-$categoriaModel = new Categoria();
 $produtoModel = new Produto();
 
-$categorias = array_column($categoriaModel->all(), "nome");
 $produtos = $produtoModel->all();
 
-include __DIR__ . "/cabecalho.php";
+include __DIR__ . "/../cabecalho.php";
 ?>
 
 <main class="container my-5">
@@ -63,5 +61,5 @@ include __DIR__ . "/cabecalho.php";
     </div>
 </main>
 
-<?php include "rodape.php";
+<?php include __DIR__ . "/../rodape.php"; 
 ?>

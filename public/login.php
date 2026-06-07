@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-include 'cabecalho.php'; 
+include __DIR__ . "/../cabecalho.php";
 ?>
 
 <link rel="stylesheet" href="assets/css/style.css">
@@ -73,4 +73,4 @@ include 'cabecalho.php';
     </div>
 </main>
 
-<?php include 'rodape.php'; ?>
+<?php include __DIR__ . "/../rodape.php"; ?>

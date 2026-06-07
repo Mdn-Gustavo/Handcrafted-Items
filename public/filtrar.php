@@ -1,8 +1,8 @@
 <?php
 
 define("ACESSO_PERMITIDO", true);
-require_once __DIR__ . "/models/Categoria.php";
-require_once __DIR__ . "/models/Produto.php";
+require_once __DIR__ . "/../models/Categoria.php";
+require_once __DIR__ . "/../models/Produto.php";
 
 $categoriaModel = new Categoria();
 $produtoModel = new Produto();
@@ -89,7 +89,7 @@ $titulo_pagina = $filtro_categoria
     ? "Categoria: " . ucfirst($filtro_categoria) . " — Handcrafted Items"
     : "Filtrar Produtos — Handcrafted Items";
 
-include "cabecalho.php";
+include __DIR__ . "/../cabecalho.php";
 ?>
 
 <main class="container my-5">
@@ -272,4 +272,4 @@ include "cabecalho.php";
     </div>
 </main>
 
-<?php include "rodape.php"; ?>
+<?php include __DIR__ . "/../rodape.php"; ?>
