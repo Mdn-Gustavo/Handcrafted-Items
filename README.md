@@ -59,7 +59,7 @@ php -S localhost:8000 -t public
 http://localhost:8000
 ```
 
-Também foi mantido um `index.php` na raiz redirecionando para `public/index.php`, caso o professor abra o projeto pela raiz no navegador.
+Também foi mantido um `index.php` na raiz redirecionando para `public/index.php`, caso o usuario abra o projeto pela raiz no navegador.
 
 ## Estrutura principal
 
