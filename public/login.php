@@ -1,76 +1,75 @@
-<?php 
-session_start();
+<?php
+require_once __DIR__ . '/../app/core/Security.php';
+require_once __DIR__ . '/../app/controllers/UsuarioController.php';
 
-if (isset($_SESSION['logged_in'])) {
-    header("Location: dashboard.php");
-    exit();
+if (is_logged_in()) {
+    redirect('dashboard.php');
 }
 
-$error = "";
+$erro = flash_get('erro');
+$sucesso = flash_get('sucesso');
+$emailSalvo = $_COOKIE['lembrar_email'] ?? '';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['username']) && isset($_POST['password'])){
-        $username = trim($_POST['username']);
-        $password = trim($_POST['password']);
-        
-        if(empty($username) || empty($password)) {
-            $error = "Preencha todos os campos";
-        } else {
-            $correctUsername = "admin";
-            $hashedPassword = '$2y$12$5TzW3arf8FT7PpZEArzfpuY.dnGI0b.qMUf25SY/elHNKb4Bcu9p.';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!csrf_validate($_POST['csrf_token'] ?? null)) {
+        $erro = 'Token CSRF inválido. Recarregue a página e tente novamente.';
+    } else {
+        $usuarioController = new UsuarioController();
+        [$ok, $mensagem, $usuario] = $usuarioController->authenticate($_POST);
 
-            if($username == $correctUsername && password_verify($password, $hashedPassword)) {
-                $_SESSION['logged_in'] = true;
-                header("Location:dashboard.php");
-                exit();
+        if ($ok) {
+            session_regenerate_id(true);
+            $_SESSION['usuario_id'] = (int) $usuario['id'];
+            $_SESSION['usuario_nome'] = $usuario['nome'];
+            $_SESSION['usuario_email'] = $usuario['email'];
+            $_SESSION['usuario_tipo'] = $usuario['tipo_usuario'];
+
+            set_cookie_seguro('ultimo_acesso', date('d/m/Y H:i:s'), 30);
+
+            if (!empty($_POST['lembrar'])) {
+                set_cookie_seguro('lembrar_email', $usuario['email'], 30);
             } else {
-                $error = "Usuário ou senha incorretos";
+                setcookie('lembrar_email', '', time() - 3600, '/');
             }
+
+            redirect('dashboard.php');
         }
+
+        $erro = $mensagem;
+        $emailSalvo = $_POST['email'] ?? '';
     }
 }
 
-include __DIR__ . "/../app/views/templates/cabecalho.php";
+include __DIR__ . '/../app/views/templates/cabecalho.php';
 ?>
-
-<link rel="stylesheet" href="assets/css/style.css">
 <main class="container container-login">
-    <div class="card card-login shadow-sm border-0">
-        <div class="card-body p-5">
-            
-            <div class="text-center mb-4">
-                <h2 class="font-artesanal">Acesso Restrito</h2>
-                <p class="text-muted small">Área exclusiva para artesãos</p>
+    <section class="card card-login shadow border-0 p-4">
+        <h1 class="h3 text-center font-artesanal mb-3">Área do Artesão</h1>
+        <p class="text-muted text-center small mb-4">Entre para gerenciar produtos, categorias e usuários.</p>
+
+        <?php if ($erro): ?><div class="alert alert-danger"><?= e($erro) ?></div><?php endif; ?>
+        <?php if ($sucesso): ?><div class="alert alert-success"><?= e($sucesso) ?></div><?php endif; ?>
+
+        <form method="POST" action="login.php">
+            <?= csrf_input() ?>
+            <div class="mb-3">
+                <label for="email" class="form-label">E-mail</label>
+                <input type="email" name="email" id="email" class="form-control" value="<?= e($emailSalvo) ?>" required>
             </div>
-
-            <?php if (!empty($error)) : ?>
-                <div class="alert alert-danger py-2 small text-center">
-                    <?= htmlspecialchars($error) ?>
-                </div>
-            <?php endif; ?>
-
-            <form method="POST">
-                <div class="mb-3">
-                    <label class="form-label small">Usuário</label>
-                    <input type="text" name="username" class="form-control" placeholder="admin" required>
-                </div>
-                
-                <div class="mb-4">
-                    <label class="form-label small">Senha</label>
-                    <input type="password" name="password" class="form-control" placeholder="••••••" required>
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100 py-2">
-                    Entrar no Sistema
-                </button>
-            </form>
-            
-            <div class="text-center mt-4">
-                <a href="index.php" class="text-muted small text-decoration-none">← Voltar para a vitrine</a>
+            <div class="mb-3">
+                <label for="senha" class="form-label">Senha</label>
+                <input type="password" name="senha" id="senha" class="form-control" required>
             </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" name="lembrar" value="1" id="lembrar" <?= $emailSalvo ? 'checked' : '' ?>>
+                <label class="form-check-label" for="lembrar">Lembrar meu e-mail</label>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+        </form>
 
+        <div class="text-center mt-3">
+            <a href="cadastro.php" class="small">Criar uma conta de teste</a>
         </div>
-    </div>
+    </section>
 </main>
-
-<?php include __DIR__ . "/../app/views/templates/rodape.php"; ?>
+<?php include __DIR__ . '/../app/views/templates/rodape.php'; ?>

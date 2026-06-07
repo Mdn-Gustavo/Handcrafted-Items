@@ -1,127 +1,52 @@
 <?php
-session_start();
+require_once __DIR__ . '/../app/core/Security.php';
+require_once __DIR__ . '/../app/controllers/CategoriaController.php';
+require_login();
 
-if (!isset($_SESSION['logged_in'])) {
-    header('Location: login.php');
-    exit();
-}
+$categoriaController = new CategoriaController();
+$categorias = $categoriaController->index();
 
-require_once __DIR__ . '/../app/models/Categoria.php';
-
-$categoriaModel = new Categoria();
-$categorias = $categoriaModel->all();
-
-$mensagem = $_GET['mensagem'] ?? '';
-$erro = $_GET['erro'] ?? '';
-
-function e($valor): string
-{
-    return htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
-}
+include __DIR__ . '/../app/views/templates/cabecalho.php';
 ?>
-
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>CRUD Categorias</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body class="bg-light">
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand" href="index.php">Handcrafted Items</a>
-
-        <div class="navbar-nav ms-auto">
-            <a class="nav-link" href="produtos.php">Produtos</a>
-            <a class="nav-link active" href="categorias.php">Categorias</a>
-        </div>
-    </div>
-</nav>
-
-<a href="../secure.php"
-   class="btn btn-secondary mb-3">
-   ← Voltar ao Painel
-</a>
-
-<main class="container">
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
+<main class="container my-5">
+    <header class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-1">Categorias</h1>
-            <p class="text-muted mb-0">CRUD de categorias.</p>
+            <h1 class="display-6 font-artesanal">Categorias</h1>
+            <p class="text-muted mb-0">Listagem do CRUD de categorias.</p>
         </div>
+        <a href="categoria_cadastrar.php" class="btn btn-primary">Nova categoria</a>
+    </header>
 
-        <a href="categoria_cadastrar.php" class="btn btn-primary">
-            Cadastrar categoria
-        </a>
-    </div>
+    <?php if ($erro = flash_get('erro')): ?><div class="alert alert-danger"><?= e($erro) ?></div><?php endif; ?>
+    <?php if ($sucesso = flash_get('sucesso')): ?><div class="alert alert-success"><?= e($sucesso) ?></div><?php endif; ?>
 
-    <?php if ($mensagem !== ''): ?>
-        <div class="alert alert-success">
-            <?= e($mensagem) ?>
-        </div>
-    <?php endif; ?>
-
-    <?php if ($erro !== ''): ?>
-        <div class="alert alert-danger">
-            <?= e($erro) ?>
-        </div>
-    <?php endif; ?>
-
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-
-            <div class="table-responsive">
-                <table class="table table-striped align-middle mb-0">
-                    <thead>
+    <section class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($categorias as $categoria): ?>
                         <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                            <th class="text-end">Ações</th>
+                            <td><?= (int) $categoria['id'] ?></td>
+                            <td><?= e($categoria['nome']) ?></td>
+                            <td class="text-end">
+                                <a href="categoria_editar.php?id=<?= (int) $categoria['id'] ?>" class="btn btn-sm btn-outline-primary">Editar</a>
+                                <a href="categoria_excluir.php?id=<?= (int) $categoria['id'] ?>" class="btn btn-sm btn-outline-danger">Excluir</a>
+                            </td>
                         </tr>
-                    </thead>
-
-                    <tbody>
-                        <?php if (empty($categorias)): ?>
-                            <tr>
-                                <td colspan="3" class="text-center text-muted py-4">
-                                    Nenhuma categoria cadastrada.
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-
-                        <?php foreach ($categorias as $categoria): ?>
-                            <tr>
-                                <td><?= e($categoria['id']) ?></td>
-                                <td><?= e($categoria['nome']) ?></td>
-
-                                <td class="text-end">
-                                    <a href="categoria_editar.php?id=<?= e($categoria['id']) ?>" class="btn btn-sm btn-warning">
-                                        Editar
-                                    </a>
-
-                                    <a href="categoria_excluir.php?id=<?= e($categoria['id']) ?>"
-                                       class="btn btn-sm btn-danger"
-                                       onclick="return confirm('Tem certeza que deseja excluir esta categoria?')">
-                                        Excluir
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-
-                </table>
-            </div>
-
+                    <?php endforeach; ?>
+                    <?php if (empty($categorias)): ?>
+                        <tr><td colspan="3" class="text-center text-muted py-4">Nenhuma categoria cadastrada.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
-    </div>
-
+    </section>
 </main>
-
-</body>
-</html>
+<?php include __DIR__ . '/../app/views/templates/rodape.php'; ?>

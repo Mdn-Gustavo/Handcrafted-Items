@@ -1,212 +1,116 @@
 # Handcrafted Items
 
-Sistema de catálogo para produtos artesanais desenvolvido em PHP utilizando arquitetura MVC parcial e banco de dados MariaDB.
+Sistema web acadêmico em PHP para catálogo e administração de produtos artesanais.
 
-## Objetivo
+## Tema
 
-O projeto foi criado com o objetivo de praticar conceitos de desenvolvimento web utilizando PHP moderno, organização de código, acesso a banco de dados com PDO e separação de responsabilidades entre camadas da aplicação.
+Catálogo de produtos artesanais com área pública para visitantes e área restrita para gerenciamento.
 
-## Tecnologias Utilizadas
+## Requisitos atendidos
 
-* PHP 8.5
-* MariaDB
-* PDO
-* HTML5
-* CSS3
-* Bootstrap 5
-* Git
-* GitHub
-* Codeberg
+- PHP com organização em MVC simples.
+- Models com POO e PDO.
+- Prepared statements em todas as operações com dados variáveis.
+- Login com `password_hash()` e `password_verify()`.
+- Sessões para usuário logado.
+- Cookies para último acesso e lembrar e-mail.
+- Token CSRF em login, cadastro e formulários sensíveis.
+- 3 CRUDs completos: produtos, categorias e usuários.
+- 3 páginas públicas antes do login: catálogo, filtro e sobre.
+- HTML semântico com Bootstrap e CSS próprio.
 
-## Estrutura do Projeto
+## Credenciais de teste
 
-```
-Handcrafted-Items/
-├── app/
-│   └── controllers/
-├── config/
-│   └── Database.php
-├── database/
-│   └── Script.sql
-├── models/
-│   ├── Produto.php
-│   ├── Categoria.php
-│   └── Usuario.php
-├── public/
-│   ├── assets/
-│   ├── index.php
-│   ├── detalhes.php
-│   ├── filtrar.php
-│   └── login.php
-├── cabecalho.php
-├── rodape.php
-├── secure.php
-└── logout.php
-```
+- E-mail: `admin@admin.com`
+- Senha: `123456`
 
-## Funcionalidades
+## Como rodar
 
-### Catálogo de Produtos
+1. Importe o banco pelo phpMyAdmin usando:
 
-* Listagem de produtos cadastrados
-* Exibição de imagens
-* Exibição de preços
-* Controle de estoque
-* Produtos em destaque
-
-### Filtros
-
-* Filtrar por categoria
-* Filtrar produtos em destaque
-* Ordenar por nome
-* Ordenar por preço crescente
-* Ordenar por preço decrescente
-
-### Página de Detalhes
-
-* Visualização completa do produto
-* Informações detalhadas
-* Categoria do produto
-* Status de estoque
-* Produtos relacionados
-
-### Autenticação
-
-* Login de usuários
-* Controle de acesso a páginas protegidas
-* Encerramento de sessão (logout)
-
-## Banco de Dados
-
-O sistema utiliza um banco de dados relacional com as seguintes entidades:
-
-### Categorias
-
-Responsável por armazenar os tipos de produtos.
-
-Exemplos:
-
-* Cerâmica
-* Sabonetes
-* Velas Artesanais
-
-### Produtos
-
-Responsável por armazenar os itens do catálogo.
-
-Campos principais:
-
-* Nome
-* Descrição
-* Preço
-* Imagem
-* Estoque
-* Destaque
-* Categoria
-
-### Usuários
-
-Responsável pelo controle de autenticação do sistema.
-
-## Arquitetura
-
-O projeto utiliza uma estrutura baseada em MVC parcial.
-
-### Models
-
-Responsáveis pela comunicação com o banco de dados.
-
-Exemplos:
-
-* Produto.php
-* Categoria.php
-* Usuario.php
-
-### Controllers
-
-Responsáveis pela lógica da aplicação.
-
-Exemplos:
-
-* ProdutoController.php
-* CategoriaController.php
-* UsuarioController.php
-
-### Views
-
-Responsáveis pela interface apresentada ao usuário.
-
-## Relacionamento entre Tabelas
-
-Cada produto pertence a uma categoria.
-
-```
-categorias
-    |
-    | 1:N
-    |
-produtos
-```
-
-A consulta dos produtos é realizada utilizando JOIN para recuperar também o nome da categoria associada.
-
-## Configuração
-
-### 1. Criar o banco de dados
-
-Execute o script localizado em:
-
-```
+```text
 database/Script.sql
 ```
 
-### 2. Configurar acesso ao banco
+2. Confira as credenciais do banco em:
 
-Arquivo:
-
-```
+```text
 config/Database.php
 ```
 
-Exemplo:
+Padrão atual:
 
 ```php
-private string $host = "localhost";
-private string $dbname = "handcrafted_items";
-private string $user = "seu_usuario";
-private string $password = "sua_senha";
+private string $host = 'localhost';
+private string $dbname = 'handcrafted_items';
+private string $user = 'root';
+private string $password = '';
 ```
 
-### 3. Iniciar servidor local
-
-A partir da raiz do projeto:
+3. Rode o servidor local a partir da raiz do projeto:
 
 ```bash
 php -S localhost:8000 -t public
 ```
 
-Acesse:
+4. Acesse:
 
-```
+```text
 http://localhost:8000
 ```
 
-## Aprendizados
+Também foi mantido um `index.php` na raiz redirecionando para `public/index.php`, caso o professor abra o projeto pela raiz no navegador.
 
-Durante o desenvolvimento deste projeto foram aplicados conceitos como:
+## Estrutura principal
 
-* Organização de projetos PHP
-* Programação orientada a objetos
-* PDO
-* Relacionamentos em banco de dados
-* SQL JOIN
-* Estrutura MVC
-* Controle de sessões
-* Versionamento com Git
-* Hospedagem de código no GitHub e Codeberg
+```text
+Handcrafted-Items/
+├── app/
+│   ├── controllers/
+│   │   ├── CategoriaController.php
+│   │   ├── ProdutoController.php
+│   │   └── UsuarioController.php
+│   ├── core/
+│   │   └── Security.php
+│   ├── models/
+│   │   ├── Categoria.php
+│   │   ├── Produto.php
+│   │   └── Usuario.php
+│   └── views/
+│       └── templates/
+│           ├── cabecalho.php
+│           └── rodape.php
+├── config/
+│   └── Database.php
+├── database/
+│   └── Script.sql
+├── public/
+│   ├── index.php
+│   ├── filtrar.php
+│   ├── sobre.php
+│   ├── detalhes.php
+│   ├── login.php
+│   ├── cadastro.php
+│   ├── dashboard.php
+│   ├── produtos.php
+│   ├── produto_cadastrar.php
+│   ├── produto_editar.php
+│   ├── produto_excluir.php
+│   ├── categorias.php
+│   ├── categoria_cadastrar.php
+│   ├── categoria_editar.php
+│   ├── categoria_excluir.php
+│   ├── usuarios.php
+│   ├── usuario_cadastrar.php
+│   ├── usuario_editar.php
+│   ├── usuario_excluir.php
+│   └── sair.php
+├── index.php
+├── secure.php
+├── logout.php
+└── README.md
+```
 
-## Autor
+## Observação importante
 
-Gustavo Medina
-
-Desenvolvido como projeto de estudo para aprofundamento em PHP, banco de dados e desenvolvimento web.
+O antigo `secure.php` concentrava coisa demais e quebrava caminhos relativos. Agora a área protegida começa em `public/dashboard.php`, e cada CRUD tem seu próprio arquivo público protegido por `require_login()`.

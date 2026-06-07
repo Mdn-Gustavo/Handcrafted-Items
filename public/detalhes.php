@@ -1,192 +1,64 @@
 <?php
+require_once __DIR__ . '/../app/core/Security.php';
+require_once __DIR__ . '/../app/controllers/ProdutoController.php';
 
-define("ACESSO_PERMITIDO", true);
-require_once __DIR__ . "/../app/models/Produto.php";
+$produtoController = new ProdutoController();
+$id = isset($_GET['id']) && ctype_digit((string) $_GET['id']) ? (int) $_GET['id'] : 0;
+$produto = $id > 0 ? $produtoController->show($id) : null;
+$relacionados = $produto ? $produtoController->relacionados((int) $produto['id'], (int) $produto['categoria_id']) : [];
 
-$produtoModel = new Produto();
-$produtos = $produtoModel->all();
-
-if (!isset($_GET["id"]) || !is_numeric($_GET["id"]) || (int) $_GET["id"] <= 0) {
-    $erro = "ID de produto inválido.";
-    $produto_encontrado = null;
-} else {
-    $produto_encontrado = $produtoModel->findById((int) $_GET["id"]);
-
-    if ($produto_encontrado === null) {
-        $erro = "Produto com ID " . (int) $_GET["id"] . " não encontrado.";
-    }
-}
-
-$titulo_pagina = isset($produto_encontrado)
-    ? htmlspecialchars($produto_encontrado["nome"]) . " — Handcrafted Items"
-    : "Produto não encontrado — Handcrafted Items";
-
-include __DIR__ . "/../app/views/templates/cabecalho.php";
+include __DIR__ . '/../app/views/templates/cabecalho.php';
 ?>
-
 <main class="container my-5">
-
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="index.php" class="text-decoration-none">← Voltar ao catálogo</a>
-            </li>
-            <?php if (isset($produto_encontrado)): ?>
-                <li class="breadcrumb-item active" aria-current="page">
-                    <?= htmlspecialchars($produto_encontrado["nome"]) ?>
-                </li>
-            <?php endif; ?>
-        </ol>
-    </nav>
-
-    <?php if (isset($erro)): ?>
-        <div class="text-center py-5">
-            <div class="alert alert-danger shadow-sm" role="alert">
-                <h2 class="alert-heading">😕 Ops!</h2>
-                <p class="mb-3"><?= htmlspecialchars($erro) ?></p>
-                <hr>
-                <a href="index.php" class="btn btn-dark">Voltar ao catálogo</a>
-            </div>
-        </div>
-
+    <?php if (!$produto): ?>
+        <section class="alert alert-warning text-center">
+            <h1 class="h4">Produto não encontrado</h1>
+            <a href="index.php" class="btn btn-dark mt-2">Voltar ao catálogo</a>
+        </section>
     <?php else: ?>
-
-        <?php $p = $produto_encontrado; ?>
-        <div class="row g-4 mb-5">
+        <section class="row g-5 align-items-start">
             <div class="col-lg-6">
-                <div class="card shadow border-0 position-relative">
-                    <img src="assets/css/images/<?= htmlspecialchars(
-                        $p["imagem"],
-                    ) ?>"
-                         class="card-img-top rounded"
-                         alt="<?= htmlspecialchars($p["nome"]) ?>"
-                         style="object-fit: cover; max-height: 500px;">
-
-                    <?php if ($p["destaque"]): ?>
-                        <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark fs-6">
-                            ⭐ Produto em Destaque
-                        </span>
-                    <?php endif; ?>
-                </div>
+                <img src="assets/css/images/<?= e($produto['imagem']) ?>" class="img-fluid rounded shadow-sm detalhe-img" alt="<?= e($produto['nome']) ?>">
             </div>
-
-            <div class="col-lg-6">
-                <div class="mb-3">
-                    <a href="filtrar.php?categoria=<?= urlencode(
-                        $p["categoria"],
-                    ) ?>"
-                       class="badge bg-light text-dark border text-decoration-none">
-                        <?= htmlspecialchars(ucfirst($p["categoria"])) ?>
-                    </a>
-                </div>
-
-                <h1 class="display-5 fw-bold mb-3"><?= htmlspecialchars(
-                    $p["nome"],
-                ) ?></h1>
-
-                <p class="h3 text-success fw-bold mb-4">
-                    R$ <?= number_format($p["preco"], 2, ",", ".") ?>
-                </p>
-
-                <div class="mb-4">
-                    <?php if ($p["estoque"] > 5): ?>
-                        <span class="badge bg-success fs-6">✓ Em estoque</span>
-
-                    <?php elseif ($p["estoque"] > 0): ?>
-                        <span class="badge bg-warning text-dark fs-6">
-                            ⚠️ Últimas <?= $p["estoque"] ?> unidade(s)!
-                        </span>
-
+            <article class="col-lg-6">
+                <span class="badge bg-light text-dark border mb-3"><?= e($produto['categoria']) ?></span>
+                <h1 class="display-6 font-artesanal"><?= e($produto['nome']) ?></h1>
+                <p class="lead text-muted"><?= e($produto['descricao']) ?></p>
+                <p class="fs-3 fw-bold text-success">R$ <?= number_format((float) $produto['preco'], 2, ',', '.') ?></p>
+                <p>
+                    <?php if ((int) $produto['estoque'] > 0): ?>
+                        <span class="badge bg-success">Em estoque: <?= (int) $produto['estoque'] ?> unidade(s)</span>
                     <?php else: ?>
-                        <span class="badge bg-danger fs-6">❌ Esgotado</span>
+                        <span class="badge bg-danger">Produto esgotado</span>
                     <?php endif; ?>
-                </div>
-
-                <p class="lead text-muted mb-4">
-                    <?= htmlspecialchars($p["descricao"]) ?>
                 </p>
-
-                <div class="card bg-light border-0 p-4 mb-4">
-                    <h5 class="fw-bold mb-3"> Sobre o produto</h5>
-                    <p class="mb-0">
-                        <?= htmlspecialchars(
-                            $p["detalhes"] ?? $p["descricao"],
-                        ) ?>
-                    </p>
-                </div>
-
-                <?php if ($p["estoque"] > 0): ?>
-                    <button class="btn btn-dark btn-lg w-100 py-3"
-                            data-produto-id="<?= $p["id"] ?>">
-                        🛒 Adicionar ao carrinho
-                    </button>
-                <?php else: ?>
-                    <button class="btn btn-secondary btn-lg w-100 py-3" disabled>
-                        Produto indisponível
-                    </button>
-                <?php endif; ?>
-            </div>
-        </div>
-
-        <?php
-        $relacionados = [];
-        foreach ($produtos as $item) {
-            if (
-                $item["categoria"] === $p["categoria"] &&
-                $item["id"] !== $p["id"]
-            ) {
-                $relacionados[] = $item;
-                if (count($relacionados) >= 3) {
-                    break;
-                }
-            }
-        }
-        ?>
+                <section class="mt-4">
+                    <h2 class="h5">Detalhes do produto</h2>
+                    <p><?= nl2br(e($produto['detalhes'] ?: $produto['descricao'])) ?></p>
+                </section>
+                <a href="index.php" class="btn btn-outline-dark mt-3">Voltar ao catálogo</a>
+            </article>
+        </section>
 
         <?php if (!empty($relacionados)): ?>
-            <section class="mt-5 pt-5 border-top">
-                <h2 class="text-center mb-4 font-artesanal"> Você também pode gostar</h2>
-
+            <section class="mt-5">
+                <h2 class="h4 font-artesanal mb-4">Produtos relacionados</h2>
                 <div class="row g-4">
-                    <?php foreach ($relacionados as $rel): ?>
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="card h-100 shadow-sm border-0 card-hover-efeito">
-                                <img src="assets/css/images/<?= htmlspecialchars(
-                                    $rel["imagem"],
-                                ) ?>"
-                                     class="card-img-top img-card-catalogo"
-                                     alt="<?= htmlspecialchars(
-                                         $rel["nome"],
-                                     ) ?>">
-
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title"><?= htmlspecialchars(
-                                        $rel["nome"],
-                                    ) ?></h5>
-
-                                    <p class="h5 text-success fw-bold mt-auto mb-3">
-                                        R$ <?= number_format(
-                                            $rel["preco"],
-                                            2,
-                                            ",",
-                                            ".",
-                                        ) ?>
-                                    </p>
-
-                                    <a href="detalhes.php?id=<?= $rel["id"] ?>"
-                                       class="btn btn-dark w-100">
-                                        Ver detalhes →
-                                    </a>
+                    <?php foreach ($relacionados as $item): ?>
+                        <article class="col-md-4">
+                            <div class="card h-100 shadow-sm">
+                                <img src="assets/css/images/<?= e($item['imagem']) ?>" class="card-img-top img-card-catalogo" alt="<?= e($item['nome']) ?>">
+                                <div class="card-body">
+                                    <h3 class="h5 card-title"><?= e($item['nome']) ?></h3>
+                                    <p class="text-success fw-bold">R$ <?= number_format((float) $item['preco'], 2, ',', '.') ?></p>
+                                    <a href="detalhes.php?id=<?= (int) $item['id'] ?>" class="btn btn-sm btn-dark">Ver</a>
                                 </div>
                             </div>
-                        </div>
+                        </article>
                     <?php endforeach; ?>
                 </div>
             </section>
         <?php endif; ?>
-
     <?php endif; ?>
-
 </main>
-
-<?php include __DIR__ . "/../app/views/templates/rodape.php"; ?>
+<?php include __DIR__ . '/../app/views/templates/rodape.php'; ?>

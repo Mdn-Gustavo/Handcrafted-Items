@@ -94,6 +94,8 @@ fabric.properties
 !.idea/codeStyles
 !.idea/runConfigurations
 
+database/corrigir_banco_sem_apagar.sql
+RESUMO_AJUSTES.md
 # End of https://www.toptal.com/developers/gitignore/api/php-cs-fixer
 #
 #

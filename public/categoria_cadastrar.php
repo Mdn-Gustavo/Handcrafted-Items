@@ -1,102 +1,47 @@
-
 <?php
-session_start();
+require_once __DIR__ . '/../app/core/Security.php';
+require_once __DIR__ . '/../app/controllers/CategoriaController.php';
+require_login();
 
-if (!isset($_SESSION['logged_in'])) {
-    header('Location: login.php');
-    exit();
-}
-
-require_once __DIR__ . '/../app/models/Categoria.php';
-
-$categoriaModel = new Categoria();
-
-$erro = '';
-$nome = '';
+$categoriaController = new CategoriaController();
+$erro = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome = trim($_POST['nome'] ?? '');
-
-    if ($nome === '') {
-        $erro = 'O nome da categoria é obrigatório.';
+    if (!csrf_validate($_POST['csrf_token'] ?? null)) {
+        $erro = 'Token CSRF inválido. Recarregue a página e tente novamente.';
     } else {
-        $categoriaModel->create([
-            'nome' => $nome
-        ]);
+        [$ok, $mensagem] = $categoriaController->store($_POST);
 
-        header('Location: categorias.php?mensagem=Categoria cadastrada com sucesso');
-        exit();
+        if ($ok) {
+            flash_set('sucesso', $mensagem);
+            redirect('categorias.php');
+        }
+
+        $erro = $mensagem;
     }
 }
 
-function e($valor): string
-{
-    return htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
-}
+include __DIR__ . '/../app/views/templates/cabecalho.php';
 ?>
+<main class="container my-5">
+    <header class="mb-4">
+        <h1 class="display-6 font-artesanal">Cadastrar categoria</h1>
+    </header>
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastrar Categoria</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php if ($erro): ?><div class="alert alert-danger"><?= e($erro) ?></div><?php endif; ?>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body class="bg-light">
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand" href="index.php">Handcrafted Items</a>
-
-        <div class="navbar-nav ms-auto">
-            <a class="nav-link" href="produtos.php">Produtos</a>
-            <a class="nav-link active" href="categorias.php">Categorias</a>
-        </div>
-    </div>
-</nav>
-
-<a href="../secure.php"
-   class="btn btn-secondary mb-3">
-   ← Voltar ao Painel
-</a>
-
-<main class="container">
-
-    <div class="card shadow-sm border-0 mx-auto" style="max-width: 700px;">
-        <div class="card-body p-4">
-
-            <h1 class="h3 mb-3">Cadastrar categoria</h1>
-
-            <?php if ($erro !== ''): ?>
-                <div class="alert alert-danger">
-                    <?= e($erro) ?>
-                </div>
-            <?php endif; ?>
-
-            <form method="POST">
-
-                <div class="mb-3">
-                    <label class="form-label">Nome da categoria</label>
-                    <input type="text" name="nome" class="form-control" value="<?= e($nome) ?>" required>
-                </div>
-
-                <button type="submit" class="btn btn-primary">
-                    Salvar
-                </button>
-
-                <a href="categorias.php" class="btn btn-secondary">
-                    Cancelar
-                </a>
-
-            </form>
-
-        </div>
-    </div>
-
+    <section class="card shadow-sm border-0 p-4">
+        <form method="POST" action="categoria_cadastrar.php">
+            <?= csrf_input() ?>
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome da categoria</label>
+                <input type="text" name="nome" id="nome" class="form-control" value="<?= e($_POST['nome'] ?? '') ?>" required>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Salvar categoria</button>
+                <a href="categorias.php" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </section>
 </main>
-
-</body>
-</html>
+<?php include __DIR__ . '/../app/views/templates/rodape.php'; ?>

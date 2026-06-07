@@ -1,275 +1,125 @@
 <?php
+require_once __DIR__ . '/../app/core/Security.php';
+require_once __DIR__ . '/../app/controllers/ProdutoController.php';
+require_once __DIR__ . '/../app/controllers/CategoriaController.php';
 
-define("ACESSO_PERMITIDO", true);
-require_once __DIR__ . "/../app/models/Categoria.php";
-require_once __DIR__ . "/../app/models/Produto.php";
+$produtoController = new ProdutoController();
+$categoriaController = new CategoriaController();
 
-$categoriaModel = new Categoria();
-$produtoModel = new Produto();
+$categoriaId = isset($_GET['categoria_id']) && ctype_digit((string) $_GET['categoria_id']) ? (int) $_GET['categoria_id'] : null;
+$destaque = isset($_GET['destaque']) && $_GET['destaque'] === '1';
+$ordem = $_GET['ordem'] ?? 'padrao';
+$busca = trim($_GET['busca'] ?? '');
 
-$categorias = array_column($categoriaModel->all(), "nome");
-$produtos = $produtoModel->all();
+$categorias = $categoriaController->index();
+$produtos = $produtoController->filtrar($categoriaId, $destaque, $ordem, $busca);
 
-$filtro_categoria = null;
-if (isset($_GET["categoria"]) && $_GET["categoria"] !== "") {
-    $candidata = trim($_GET["categoria"]);
-    if (in_array($candidata, $categorias, true)) {
-        $filtro_categoria = $candidata;
-    }
-}
-
-$ordens_validas = ["padrao", "preco_asc", "preco_desc", "nome_az", "nome_za"];
-$filtro_ordem = "padrao";
-if (isset($_GET["ordem"]) && in_array($_GET["ordem"], $ordens_validas, true)) {
-    $filtro_ordem = $_GET["ordem"];
-}
-$filtro_destaque = isset($_GET["destaque"]) && $_GET["destaque"] === "1";
-$produtos_filtrados = [];
-
-foreach ($produtos as $produto) {
-    if (
-        $filtro_categoria !== null &&
-        $produto["categoria"] !== $filtro_categoria
-    ) {
-        continue;
-    }
-
-    if ($filtro_destaque && (int) $produto["destaque"] !== 1) {
-        continue;
-    }
-
-    $produtos_filtrados[] = $produto;
-}
-
-switch ($filtro_ordem) {
-    case "preco_asc":
-        usort($produtos_filtrados, function ($a, $b) {
-            return $a["preco"] <=> $b["preco"];
-        });
-        break;
-
-    case "preco_desc":
-        usort($produtos_filtrados, function ($a, $b) {
-            return $b["preco"] <=> $a["preco"];
-        });
-        break;
-
-    case "nome_az":
-        usort($produtos_filtrados, function ($a, $b) {
-            return strcmp($a["nome"], $b["nome"]);
-        });
-        break;
-
-    case "nome_za":
-        usort($produtos_filtrados, function ($a, $b) {
-            return strcmp($b["nome"], $a["nome"]);
-        });
-        break;
-
-    default:
-        break;
-}
-
-function url_filtro(string $chave, string $valor): string
+function link_filtro(array $novosParametros): string
 {
-    $params = $_GET;
-    $params[$chave] = $valor;
-    return "filtrar.php?" . http_build_query($params);
-}
+    $params = array_merge($_GET, $novosParametros);
 
-function url_remover_filtro(string $chave): string
-{
-    $params = $_GET;
-    unset($params[$chave]);
+    foreach ($params as $chave => $valor) {
+        if ($valor === null || $valor === '') {
+            unset($params[$chave]);
+        }
+    }
+
     $query = http_build_query($params);
-    return "filtrar.php" . ($query ? "?" . $query : "");
+
+    return 'filtrar.php' . ($query ? '?' . $query : '');
 }
 
-$titulo_pagina = $filtro_categoria
-    ? "Categoria: " . ucfirst($filtro_categoria) . " — Handcrafted Items"
-    : "Filtrar Produtos — Handcrafted Items";
-
-include __DIR__ . "/../app/views/templates/cabecalho.php";
+include __DIR__ . '/../app/views/templates/cabecalho.php';
 ?>
-
 <main class="container my-5">
     <header class="text-center mb-5">
-        <h1 class="display-4 font-artesanal">Filtrar Produtos</h1>
-        <p class="text-muted">Encontre exatamente o que você procura.</p>
+        <h1 class="display-5 font-artesanal">Filtrar produtos</h1>
+        <p class="text-muted">Use categoria, destaque, busca e ordenação para encontrar um item.</p>
     </header>
 
     <div class="row">
         <aside class="col-lg-3 mb-4">
-            <div class="card shadow-sm border-0 mb-3">
+            <section class="card shadow-sm border-0 mb-3">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Categoria</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <a href="<?= url_remover_filtro("categoria") ?>"
-                               class="text-decoration-none <?= $filtro_categoria ===
-                               null
-                                   ? "fw-bold text-dark"
-                                   : "text-muted" ?>">
-                                Todas as categorias
-                            </a>
-                        </li>
-                        <?php foreach ($categorias as $cat): ?>
-                            <li class="mb-2">
-                                <a href="<?= url_filtro("categoria", $cat) ?>"
-                                   class="text-decoration-none <?= $filtro_categoria ===
-                                   $cat
-                                       ? "fw-bold text-dark"
-                                       : "text-muted" ?>">
-                                    <?= htmlspecialchars(ucfirst($cat)) ?>
-                                </a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
+                    <h2 class="h5 card-title">Busca</h2>
+                    <form method="GET" action="filtrar.php">
+                        <?php if ($categoriaId): ?><input type="hidden" name="categoria_id" value="<?= (int) $categoriaId ?>"><?php endif; ?>
+                        <?php if ($destaque): ?><input type="hidden" name="destaque" value="1"><?php endif; ?>
+                        <?php if ($ordem !== 'padrao'): ?><input type="hidden" name="ordem" value="<?= e($ordem) ?>"><?php endif; ?>
+                        <input type="text" name="busca" class="form-control mb-2" value="<?= e($busca) ?>" placeholder="Nome ou descrição">
+                        <button class="btn btn-dark w-100" type="submit">Buscar</button>
+                    </form>
                 </div>
-            </div>
+            </section>
 
-            <div class="card shadow-sm border-0 mb-3">
+            <section class="card shadow-sm border-0 mb-3">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Destaque</h5>
-                    <?php if ($filtro_destaque): ?>
-                        <a href="<?= url_remover_filtro(
-                            "destaque",
-                        ) ?>" class="btn btn-outline-secondary btn-sm w-100">
-                            Ver todos (remover filtro)
+                    <h2 class="h5 card-title">Categoria</h2>
+                    <a href="<?= e(link_filtro(['categoria_id' => null])) ?>" class="d-block mb-2 <?= $categoriaId === null ? 'fw-bold text-dark' : 'text-muted' ?>">Todas</a>
+                    <?php foreach ($categorias as $categoria): ?>
+                        <a href="<?= e(link_filtro(['categoria_id' => $categoria['id']])) ?>" class="d-block mb-2 <?= $categoriaId === (int) $categoria['id'] ? 'fw-bold text-dark' : 'text-muted' ?>">
+                            <?= e($categoria['nome']) ?>
                         </a>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+
+            <section class="card shadow-sm border-0 mb-3">
+                <div class="card-body">
+                    <h2 class="h5 card-title">Destaque</h2>
+                    <?php if ($destaque): ?>
+                        <a href="<?= e(link_filtro(['destaque' => null])) ?>" class="btn btn-outline-secondary btn-sm w-100">Remover destaque</a>
                     <?php else: ?>
-                        <a href="<?= url_filtro(
-                            "destaque",
-                            "1",
-                        ) ?>" class="btn btn-outline-warning btn-sm w-100">
-                            ⭐ Apenas destaques
-                        </a>
+                        <a href="<?= e(link_filtro(['destaque' => '1'])) ?>" class="btn btn-outline-warning btn-sm w-100">Apenas destaques</a>
                     <?php endif; ?>
                 </div>
-            </div>
+            </section>
 
-            <div class="card shadow-sm border-0 mb-3">
+            <section class="card shadow-sm border-0 mb-3">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Ordenar por</h5>
-                    <ul class="list-unstyled">
-                        <?php
-                        $opcoes_ordem = [
-                            "padrao" => "Padrão",
-                            "preco_asc" => "Menor preço",
-                            "preco_desc" => "Maior preço",
-                            "nome_az" => "Nome A→Z",
-                            "nome_za" => "Nome Z→A",
-                        ];
-                        foreach ($opcoes_ordem as $valor => $label): ?>
-                            <li class="mb-2">
-                                <a href="<?= url_filtro("ordem", $valor) ?>"
-                                   class="text-decoration-none <?= $filtro_ordem ===
-                                   $valor
-                                       ? "fw-bold text-dark"
-                                       : "text-muted" ?>">
-                                    <?= $label ?>
-                                </a>
-                            </li>
-                        <?php endforeach;
-                        ?>
-                    </ul>
+                    <h2 class="h5 card-title">Ordenar</h2>
+                    <?php
+                    $opcoes = [
+                        'padrao' => 'Padrão',
+                        'preco_asc' => 'Menor preço',
+                        'preco_desc' => 'Maior preço',
+                        'nome_az' => 'Nome A-Z',
+                        'nome_za' => 'Nome Z-A',
+                    ];
+                    ?>
+                    <?php foreach ($opcoes as $valor => $label): ?>
+                        <a href="<?= e(link_filtro(['ordem' => $valor])) ?>" class="d-block mb-2 <?= $ordem === $valor ? 'fw-bold text-dark' : 'text-muted' ?>"><?= e($label) ?></a>
+                    <?php endforeach; ?>
                 </div>
-            </div>
+            </section>
 
-            <?php if (!empty($_GET)): ?>
-                <a href="filtrar.php" class="btn btn-danger btn-sm w-100">
-                    🗑️ Limpar todos os filtros
-                </a>
-            <?php endif; ?>
+            <a href="filtrar.php" class="btn btn-danger btn-sm w-100">Limpar filtros</a>
         </aside>
-        <section class="col-lg-9">
-            <div class="alert alert-light border mb-4" role="alert">
-                <strong><?= count($produtos_filtrados) ?></strong>
-                produto(s) encontrado(s)
-                <?php if ($filtro_categoria): ?>
-                    em <strong><?= htmlspecialchars(
-                        ucfirst($filtro_categoria),
-                    ) ?></strong>
-                <?php endif; ?>
-                <?php if ($filtro_destaque): ?>
-                    · apenas <strong>destaques</strong>
-                <?php endif; ?>
-            </div>
 
-            <?php if (empty($produtos_filtrados)): ?>
-                <div class="text-center py-5">
-                    <div class="alert alert-warning" role="alert">
-                        <h4 class="alert-heading">😕 Nenhum produto encontrado</h4>
-                        <p>Nenhum produto corresponde aos filtros selecionados.</p>
-                        <hr>
-                        <a href="filtrar.php" class="btn btn-dark">Ver todos os produtos</a>
-                    </div>
-                </div>
+        <section class="col-lg-9" aria-label="Produtos filtrados">
+            <div class="alert alert-light border mb-4"><strong><?= count($produtos) ?></strong> produto(s) encontrado(s).</div>
+
+            <?php if (empty($produtos)): ?>
+                <div class="alert alert-warning text-center">Nenhum produto corresponde aos filtros.</div>
             <?php else: ?>
                 <div class="row g-4">
-                    <?php foreach ($produtos_filtrados as $produto): ?>
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="card h-100 shadow-sm border-0 card-hover-efeito">
-                                <img src="assets/css/images/<?= htmlspecialchars(
-                                    $produto["imagem"],
-                                ) ?>"
-                                     class="card-img-top img-card-catalogo"
-                                     alt="<?= htmlspecialchars(
-                                         $produto["nome"],
-                                     ) ?>">
-
+                    <?php foreach ($produtos as $produto): ?>
+                        <article class="col-12 col-md-6 col-lg-4">
+                            <div class="card h-100 shadow-sm card-hover-efeito">
+                                <img src="assets/css/images/<?= e($produto['imagem']) ?>" class="card-img-top img-card-catalogo" alt="<?= e($produto['nome']) ?>">
                                 <div class="card-body d-flex flex-column">
-                                    <div class="mb-2 d-flex justify-content-between align-items-center">
-                                        <span class="badge bg-light text-dark border small">
-                                            <?= htmlspecialchars(
-                                                ucfirst($produto["categoria"]),
-                                            ) ?>
-                                        </span>
-                                        <?php if ($produto["destaque"]): ?>
-                                            <span class="badge bg-warning text-dark">⭐ Destaque</span>
-                                        <?php endif; ?>
-                                    </div>
-
-                                    <h5 class="card-title"><?= htmlspecialchars(
-                                        $produto["nome"],
-                                    ) ?></h5>
-
-                                    <p class="card-text text-muted small flex-grow-1">
-                                        <?= htmlspecialchars(
-                                            $produto["descricao"],
-                                        ) ?>
-                                    </p>
-
-                                    <div class="mt-3">
-                                        <p class="h5 text-success fw-bold">
-                                            R$ <?= number_format(
-                                                $produto["preco"],
-                                                2,
-                                                ",",
-                                                ".",
-                                            ) ?>
-                                        </p>
-
-                                        <?php if ($produto["estoque"] > 0): ?>
-                                            <span class="badge bg-success mb-2">✓ Em estoque</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-danger mb-2">✗ Esgotado</span>
-                                        <?php endif; ?>
-
-                                        <a href="detalhes.php?id=<?= $produto[
-                                            "id"
-                                        ] ?>" class="btn btn-dark w-100 mt-2">
-                                            Ver Detalhes
-                                        </a>
-                                    </div>
+                                    <span class="badge bg-light text-dark border align-self-start mb-2"><?= e($produto['categoria']) ?></span>
+                                    <h3 class="h5 card-title"><?= e($produto['nome']) ?></h3>
+                                    <p class="card-text text-muted small flex-grow-1"><?= e($produto['descricao']) ?></p>
+                                    <p class="h5 text-success fw-bold">R$ <?= number_format((float) $produto['preco'], 2, ',', '.') ?></p>
+                                    <a href="detalhes.php?id=<?= (int) $produto['id'] ?>" class="btn btn-dark w-100 mt-auto">Ver detalhes</a>
                                 </div>
                             </div>
-                        </div>
+                        </article>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
         </section>
     </div>
 </main>
-
-<?php include __DIR__ . "/../app/views/templates/rodape.php"; ?>
+<?php include __DIR__ . '/../app/views/templates/rodape.php'; ?>
