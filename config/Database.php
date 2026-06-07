@@ -4,8 +4,8 @@ class Database
 {
     private string $host = "localhost";
     private string $dbname = "handcrafted_items";
-    private string $user = "rootdasilva";
-    private string $password = "123456";
+    private string $user = "root";
+    private string $password = "";
 
     public function connect(): PDO
     {
