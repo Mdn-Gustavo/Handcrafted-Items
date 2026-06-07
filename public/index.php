@@ -8,7 +8,7 @@ $produtoModel = new Produto();
 $produtos = $produtoModel->all();
 
 include __DIR__ . "/../cabecalho.php";
-?>
+?>3
 
 <main class="container my-5">
     <header class="text-center mb-5">

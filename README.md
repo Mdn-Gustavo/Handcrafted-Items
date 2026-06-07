@@ -1,92 +1,212 @@
 # Handcrafted Items
 
-Academic project developed in pure PHP focused on an artisanal products catalog, user authentication, and modular system organization.
+Sistema de catálogo para produtos artesanais desenvolvido em PHP utilizando arquitetura MVC parcial e banco de dados MariaDB.
 
-## About the Project
+## Objetivo
 
-The system simulates an online showcase for handcrafted products, allowing:
+O projeto foi criado com o objetivo de praticar conceitos de desenvolvimento web utilizando PHP moderno, organização de código, acesso a banco de dados com PDO e separação de responsabilidades entre camadas da aplicação.
 
-* Product visualization
-* Category organization
-* Product details page
-* Administrative login
-* Protected area
-* Dynamic product registration
-* Session-based product integration
+## Tecnologias Utilizadas
 
-The project was developed without frameworks or databases, using only pure PHP, HTML, CSS, and Bootstrap.
-
----
-
-## Features
-
-* Handcrafted products catalog
-* Login and logout system
-* Protected pages using PHP sessions
-* Product registration form
-* Form validation
-* Dynamic integration between catalog and session data
-* Responsive layout using Bootstrap
-
----
-
-## Technologies Used
-
-* PHP
+* PHP 8.5
+* MariaDB
+* PDO
 * HTML5
 * CSS3
 * Bootstrap 5
-* Git & GitHub
+* Git
+* GitHub
+* Codeberg
 
----
+## Estrutura do Projeto
 
-## Security Features
-
-* `password_hash()`
-* `password_verify()`
-* `htmlspecialchars()`
-* Form validation
-* Session control using `$_SESSION`
-
----
-
-## Project Structure
-
-```txt
+```
 Handcrafted-Items/
-│
-├── assets/
-│   ├── css/
-│   └── images/
-│
+├── app/
+│   └── controllers/
+├── config/
+│   └── Database.php
+├── database/
+│   └── Script.sql
+├── models/
+│   ├── Produto.php
+│   ├── Categoria.php
+│   └── Usuario.php
+├── public/
+│   ├── assets/
+│   ├── index.php
+│   ├── detalhes.php
+│   ├── filtrar.php
+│   └── login.php
 ├── cabecalho.php
 ├── rodape.php
-├── dados.php
-├── funcoes.php
-├── index.php
-├── detalhes.php
-├── login.php
-├── logout.php
 ├── secure.php
-└── README.md
+└── logout.php
 ```
 
+## Funcionalidades
 
----
+### Catálogo de Produtos
 
-## Presentation Video
+* Listagem de produtos cadastrados
+* Exibição de imagens
+* Exibição de preços
+* Controle de estoque
+* Produtos em destaque
 
-The project presentation video was submitted separately as requested by the professor.
+### Filtros
 
----
+* Filtrar por categoria
+* Filtrar produtos em destaque
+* Ordenar por nome
+* Ordenar por preço crescente
+* Ordenar por preço decrescente
 
-## Academic Purpose
+### Página de Detalhes
 
-This project was developed to practice:
+* Visualização completa do produto
+* Informações detalhadas
+* Categoria do produto
+* Status de estoque
+* Produtos relacionados
 
-* Pure PHP programming
-* Web project structure
-* Session handling
-* Basic web application security
-* Code modularization
-* Team collaboration using GitHub
+### Autenticação
+
+* Login de usuários
+* Controle de acesso a páginas protegidas
+* Encerramento de sessão (logout)
+
+## Banco de Dados
+
+O sistema utiliza um banco de dados relacional com as seguintes entidades:
+
+### Categorias
+
+Responsável por armazenar os tipos de produtos.
+
+Exemplos:
+
+* Cerâmica
+* Sabonetes
+* Velas Artesanais
+
+### Produtos
+
+Responsável por armazenar os itens do catálogo.
+
+Campos principais:
+
+* Nome
+* Descrição
+* Preço
+* Imagem
+* Estoque
+* Destaque
+* Categoria
+
+### Usuários
+
+Responsável pelo controle de autenticação do sistema.
+
+## Arquitetura
+
+O projeto utiliza uma estrutura baseada em MVC parcial.
+
+### Models
+
+Responsáveis pela comunicação com o banco de dados.
+
+Exemplos:
+
+* Produto.php
+* Categoria.php
+* Usuario.php
+
+### Controllers
+
+Responsáveis pela lógica da aplicação.
+
+Exemplos:
+
+* ProdutoController.php
+* CategoriaController.php
+* UsuarioController.php
+
+### Views
+
+Responsáveis pela interface apresentada ao usuário.
+
+## Relacionamento entre Tabelas
+
+Cada produto pertence a uma categoria.
+
+```
+categorias
+    |
+    | 1:N
+    |
+produtos
+```
+
+A consulta dos produtos é realizada utilizando JOIN para recuperar também o nome da categoria associada.
+
+## Configuração
+
+### 1. Criar o banco de dados
+
+Execute o script localizado em:
+
+```
+database/Script.sql
+```
+
+### 2. Configurar acesso ao banco
+
+Arquivo:
+
+```
+config/Database.php
+```
+
+Exemplo:
+
+```php
+private string $host = "localhost";
+private string $dbname = "handcrafted_items";
+private string $user = "seu_usuario";
+private string $password = "sua_senha";
+```
+
+### 3. Iniciar servidor local
+
+A partir da raiz do projeto:
+
+```bash
+php -S localhost:8000 -t public
+```
+
+Acesse:
+
+```
+http://localhost:8000
+```
+
+## Aprendizados
+
+Durante o desenvolvimento deste projeto foram aplicados conceitos como:
+
+* Organização de projetos PHP
+* Programação orientada a objetos
+* PDO
+* Relacionamentos em banco de dados
+* SQL JOIN
+* Estrutura MVC
+* Controle de sessões
+* Versionamento com Git
+* Hospedagem de código no GitHub e Codeberg
+
+## Autor
+
+Gustavo Medina
+
+Desenvolvido como projeto de estudo para aprofundamento em PHP, banco de dados e desenvolvimento web.
