@@ -6,8 +6,8 @@ if (!isset($_SESSION['logged_in'])) {
     exit();
 }
 
-require_once __DIR__ . '/../models/Produto.php';
-require_once __DIR__ . '/../models/Categoria.php';
+require_once __DIR__ . '/../app/models/Produto.php';
+require_once __DIR__ . '/../app/models/Categoria.php';
 
 $produtoModel = new Produto();
 $categoriaModel = new Categoria();
@@ -93,6 +93,11 @@ function e($valor): string
         </div>
     </div>
 </nav>
+
+<a href="../secure.php"
+   class="btn btn-secondary mb-3">
+   ← Voltar ao Painel
+</a>
 
 <main class="container">
 

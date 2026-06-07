@@ -6,7 +6,7 @@ if (!isset($_SESSION['logged_in'])) {
     exit();
 }
 
-require_once __DIR__ . '/../models/Categoria.php';
+require_once __DIR__ . '/../app/models/Categoria.php';
 
 $categoriaModel = new Categoria();
 
