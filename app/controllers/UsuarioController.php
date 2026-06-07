@@ -4,7 +4,7 @@ class UsuarioController
 {
     public function login()
     {
-        require_once __DIR__ . '/../Handcrafted-Items-main/public/login.php';
+        require_once __DIR__ . '/../templates/login.php';
     }
 
     public function authenticate()

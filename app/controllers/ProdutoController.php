@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . "/../Handcrafted-Items-main/model/Produto.php";
+require_once __DIR__ . "/../models/Produto.php";
 
 class ProdutoController
 {

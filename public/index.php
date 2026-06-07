@@ -1,13 +1,15 @@
 <?php
 define("ACESSO_PERMITIDO", true);
 
-require_once __DIR__ . "/../models/Produto.php";
+define('RAIZ', dirname(__DIR__));
+
+require_once RAIZ . "/app/models/Produto.php";
 
 $produtoModel = new Produto();
 
 $produtos = $produtoModel->all();
 
-include __DIR__ . "/../cabecalho.php";
+include RAIZ . "/app/views/templates/cabecalho.php";
 ?>
 
 <main class="container my-5">
@@ -61,5 +63,5 @@ include __DIR__ . "/../cabecalho.php";
     </div>
 </main>
 
-<?php include __DIR__ . "/../rodape.php"; 
+<?php include RAIZ . "/app/views/templates/rodape.php";
 ?>

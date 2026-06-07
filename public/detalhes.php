@@ -1,7 +1,7 @@
 <?php
 
 define("ACESSO_PERMITIDO", true);
-require_once __DIR__ . "/../models/Produto.php";
+require_once __DIR__ . "/../app/models/Produto.php";
 
 $produtoModel = new Produto();
 $produtos = $produtoModel->all();
@@ -21,7 +21,7 @@ $titulo_pagina = isset($produto_encontrado)
     ? htmlspecialchars($produto_encontrado["nome"]) . " — Handcrafted Items"
     : "Produto não encontrado — Handcrafted Items";
 
-include __DIR__ . "/../cabecalho.php";
+include __DIR__ . "/../app/views/templates/cabecalho.php";
 ?>
 
 <main class="container my-5">
@@ -189,4 +189,4 @@ include __DIR__ . "/../cabecalho.php";
 
 </main>
 
-<?php include __DIR__ . "/../rodape.php"; ?>
+<?php include __DIR__ . "/../app/views/templates/rodape.php"; ?>

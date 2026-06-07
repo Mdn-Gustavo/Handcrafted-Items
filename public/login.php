@@ -2,8 +2,7 @@
 session_start();
 
 if (isset($_SESSION['logged_in'])) {
-    require_once __DIR__ . '/../secure.php';
-    header("Location: secure.php");
+    header("Location: dashboard.php");
     exit();
 }
 
@@ -22,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if($username == $correctUsername && password_verify($password, $hashedPassword)) {
                 $_SESSION['logged_in'] = true;
-                header("Location: secure.php");
+                header("Location:dashboard.php");
                 exit();
             } else {
                 $error = "Usuário ou senha incorretos";
@@ -31,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-include __DIR__ . "/../cabecalho.php";
+include __DIR__ . "/../app/views/templates/cabecalho.php";
 ?>
 
 <link rel="stylesheet" href="assets/css/style.css">
@@ -74,4 +73,4 @@ include __DIR__ . "/../cabecalho.php";
     </div>
 </main>
 
-<?php include __DIR__ . "/../rodape.php"; ?>
+<?php include __DIR__ . "/../app/views/templates/rodape.php"; ?>

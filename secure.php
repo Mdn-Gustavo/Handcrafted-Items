@@ -8,9 +8,8 @@ if (!isset($_SESSION["logged_in"])) {
     header("Location: login.php");
     exit();
 }
-
-require_once __DIR__ . "/models/Produto.php";
-require_once __DIR__ . "/models/Categoria.php";
+require_once "app/models/Produto.php";
+require_once "app/models/Categoria.php";
 
 $categoriaModel = new Categoria();
 $produtoModel = new Produto();
@@ -59,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-include "cabecalho.php";
+include "app/views/templates/cabecalho.php";
 ?>
 
 <link rel="stylesheet" href="assets/css/style.css">
@@ -69,7 +68,7 @@ include "cabecalho.php";
 
             <div class="admin-header d-flex justify-content-between align-items-center mb-4">
                 <h1 class="font-artesanal">Painel Administrativo</h1>
-                <a href="logout.php" class="btn btn-logout">Sair do Sistema</a>
+                <a href="sair.php" class="btn btn-logout">Sair do Sistema</a>
             </div>
 
             <div class="card card-admin shadow-sm border-0">
@@ -173,4 +172,4 @@ include "cabecalho.php";
     </div>
 </main>
 
-<?php include "rodape.php"; ?>
+<?php include "app/views/templates/rodape.php"; ?>
