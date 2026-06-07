@@ -85,8 +85,7 @@ function flash_get(string $tipo): ?string
 
 function set_cookie_seguro(string $nome, string $valor, int $dias = 30): void
 {
-    // Forma compatível com versões antigas do PHP usadas em alguns ambientes de faculdade/XAMPP.
-    // Evita erro 500 em servidores que não aceitam o array de opções do setcookie().
+   
     setcookie(
         $nome,
         $valor,
