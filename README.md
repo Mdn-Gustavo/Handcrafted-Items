@@ -208,5 +208,8 @@ Durante o desenvolvimento deste projeto foram aplicados conceitos como:
 ## Autor
 
 Gustavo Medina
+Pedro Tomazi
+Tales Mácola
+Henrique Funes
 
 Desenvolvido como projeto de estudo para aprofundamento em PHP, banco de dados e desenvolvimento web.
